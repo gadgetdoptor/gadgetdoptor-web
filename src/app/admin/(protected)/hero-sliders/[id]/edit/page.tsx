@@ -15,7 +15,7 @@ export default async function EditHeroSliderPage({ params }: { params: Promise<{
 
     return (
         <div className="flex flex-col gap-6">
-            <h1 className="text-3xl font-bold tracking-tight">Edit Hero Slider</h1>
+            <h1 className="text-xl font-bold tracking-tight">Edit hero slider</h1>
             <HeroSliderForm slider={slider} onSubmit={updateHeroSliderWithId} />
         </div>
     );

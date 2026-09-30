@@ -168,7 +168,7 @@ export function CategoriesTable({ categories }: CategoriesTableProps) {
           </Select>
         </div>
       </div>
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-[16px] border overflow-hidden">
         <Table className="border-collapse [&_td]:border [&_th]:border">
           <TableHeader>
             <TableRow>
@@ -201,10 +201,10 @@ export function CategoriesTable({ categories }: CategoriesTableProps) {
                       alt={category.name}
                       width={40}
                       height={40}
-                      className="rounded-md object-cover"
+                      className="rounded-[8px] object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground text-xs">
+                    <div className="w-10 h-10 bg-muted rounded-[8px] flex items-center justify-center text-muted-foreground text-xs">
                       No img
                     </div>
                   )}

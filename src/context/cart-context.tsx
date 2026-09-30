@@ -10,21 +10,21 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    const storedCart = localStorage.getItem("abrar_shop_cart");
+    const storedCart = localStorage.getItem("gadgetdoptor_cart");
     if (storedCart) {
       setItems(JSON.parse(storedCart));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("abrar_shop_cart", JSON.stringify(items));
+    localStorage.setItem("gadgetdoptor_cart", JSON.stringify(items));
   }, [items]);
 
   const addItem = (product: Product, quantity: number = 1): boolean => {
     let success = false;
     setItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
-      
+
       if (existingItem) {
         const newQuantity = existingItem.quantity + quantity;
         if (newQuantity > product.stock) {

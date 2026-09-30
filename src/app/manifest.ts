@@ -1,17 +1,19 @@
 import { MetadataRoute } from 'next'
+import { getSiteSettings } from '@/lib/data'
 
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+    const settings = await getSiteSettings();
     return {
-        name: 'Gadget Doptor',
-        short_name: 'Gadget Doptor',
-        description: 'Your one-stop destination for the latest trends and high-quality products in Bangladesh.',
+        name: settings.siteName,
+        short_name: settings.siteName,
+        description: settings.seoMetaDescription || `Your one-stop destination for the latest trends and high-quality products.`,
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#000000',
         icons: [
             {
-                src: '/gadgetdoptor-logo.webp',
+                src: settings.siteLogo,
                 sizes: 'any',
                 type: 'image/png',
             },

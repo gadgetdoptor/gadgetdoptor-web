@@ -1,5 +1,9 @@
-
-import { getProductBySlug, getCategoryAncestors, getProductReviews, getAllProductSlugs } from "@/lib/data";
+import {
+  getProductBySlug,
+  getCategoryAncestors,
+  getProductReviews,
+  getAllProductSlugs,
+} from "@/lib/data";
 import { ProductRatingInfo } from "@/components/product/product-rating-info";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -40,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const description = product.description
     ? product.description.substring(0, 160)
-    : `${product.name} at only Tk ${product.price.toLocaleString()}. ${product.stock > 0 ? `Only ${product.stock} units left in stock.` : 'Out of Stock.'} Buy now for the best price in Bangladesh at Gadget Doptor.`;
+    : `${product.name} at only Tk ${product.price.toLocaleString()}. ${product.stock > 0 ? `Only ${product.stock} units left in stock.` : "Out of Stock."} Buy now for the best price in Bangladesh at Gadget Doptor.`;
 
   return {
     title: `${product.name} Price in Bangladesh`,
@@ -56,15 +60,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           alt: product.name,
         },
       ],
-      type: 'website',
-      siteName: 'Gadget Doptor',
+      type: "website",
+      siteName: "Gadget Doptor",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: `${product.name} Price in Bangladesh`,
       description: description,
       images: [product.images[0]],
-      creator: '@gadgetdoptor',
+      creator: "@gadgetdoptor",
     },
     alternates: {
       canonical: `https://gadgetdoptor.vercel.app/product/${slug}`,
@@ -72,9 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductDetailPage({
-  params,
-}: Props) {
+export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
 
@@ -85,57 +87,70 @@ export default async function ProductDetailPage({
   // Concurrent fetching of non-critical data
   const [reviews, parentTrail] = await Promise.all([
     getProductReviews(product.id),
-    product.categoryId ? getCategoryAncestors(product.categoryId) : Promise.resolve([])
+    product.categoryId
+      ? getCategoryAncestors(product.categoryId)
+      : Promise.resolve([]),
   ]);
 
-  const averageRating = reviews.length > 0
-    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-    : null;
+  const averageRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
+        ).toFixed(1)
+      : null;
 
   // Fetch categories to build hierarchical breadcrumb
-  const breadcrumbItems = [{ name: 'Home', href: '/' }];
+  const breadcrumbItems = [{ name: "Home", href: "/" }];
 
   if (parentTrail.length > 0) {
     // Add to breadcrumb items with cumulative slugs
     let cumulativeSlug = "";
-    parentTrail.forEach(cat => {
-      cumulativeSlug = cumulativeSlug ? `${cumulativeSlug}/${cat.slug}` : cat.slug;
+    parentTrail.forEach((cat) => {
+      cumulativeSlug = cumulativeSlug
+        ? `${cumulativeSlug}/${cat.slug}`
+        : cat.slug;
       breadcrumbItems.push({
         name: cat.name,
-        href: `/category/${cumulativeSlug}`
+        href: `/category/${cumulativeSlug}`,
       });
     });
   }
 
   // Add the product itself
-  breadcrumbItems.push({ name: product.name, href: `/product/${product.slug}` });
+  breadcrumbItems.push({
+    name: product.name,
+    href: `/product/${product.slug}`,
+  });
 
   // Build JSON-LD Structured Data for Google SEO
   const jsonLd = {
     "@context": "https://schema.org/",
     "@type": "Product",
-    "name": product.name,
-    "image": product.images,
-    "description": product.description || `${product.name} price in Bangladesh`,
-    "sku": product.sku,
-    "mpn": product.id,
-    "brand": {
+    name: product.name,
+    image: product.images,
+    description: product.description || `${product.name} price in Bangladesh`,
+    sku: product.sku,
+    mpn: product.id,
+    brand: {
       "@type": "Brand",
-      "name": product.brand || "Gadget Doptor"
+      name: product.brand || "Gadget Doptor",
     },
-    "offers": {
+    offers: {
       "@type": "Offer",
-      "url": `https://gadgetdoptor.com/product/${product.slug}`,
-      "priceCurrency": "BDT",
-      "price": product.price,
-      "priceValidUntil": "2026-12-31",
-      "itemCondition": "https://schema.org/NewCondition",
-      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      "seller": {
+      url: `https://gadgetdoptor.com/product/${product.slug}`,
+      priceCurrency: "BDT",
+      price: product.price,
+      priceValidUntil: "2026-12-31",
+      itemCondition: "https://schema.org/NewCondition",
+      availability:
+        product.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      seller: {
         "@type": "Organization",
-        "name": "Gadget Doptor"
-      }
-    }
+        name: "Gadget Doptor",
+      },
+    },
   };
 
   return (
@@ -156,34 +171,50 @@ export default async function ProductDetailPage({
           {/* Product Info */}
           <div className="space-y-6 md:-mt-1.5">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold font-headline leading-tight mt-0">{product.name}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold font-headline leading-tight mt-0">
+                {product.name}
+              </h1>
               <h2 className="sr-only">Product Overview</h2>
               <div className="flex flex-wrap items-center gap-4 mt-2">
-                <div className="flex items-center gap-1.5 px-2 py-0.5 border text-[12px] font-medium text-zinc-500 tracking-wider">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 border rounded-md text-[12px] font-medium text-muted-foreground tracking-wider">
                   Product Id:
                   <span className="font-bold">{product.sku}</span>
                   <CopyButton value={String(product.sku)} className="ml-1" />
                 </div>
                 {averageRating && (
-                  <ProductRatingInfo averageRating={averageRating} reviewCount={reviews.length} />
+                  <ProductRatingInfo
+                    averageRating={averageRating}
+                    reviewCount={reviews.length}
+                  />
                 )}
               </div>
               <div className="mt-5 space-y-4">
-                <div className="bg-[#f5f6f7] px-3 py-2 inline-block min-w-[180px]">
-                  <span className="text-[#666] text-xs block mb-0.5">Special Price</span>
-                  <p className="text-2xl font-bold text-black">Tk {product.price.toLocaleString()}</p>
+                <div className="bg-muted px-3 py-2 inline-block min-w-[180px] rounded-lg">
+                  <span className="text-muted-foreground text-xs block mb-0.5">
+                    Special Price
+                  </span>
+                  <p className="text-2xl font-bold text-foreground">
+                    Tk {product.price.toLocaleString()}
+                  </p>
                 </div>
 
                 <div className="space-y-2.5">
-                  {product.originalPrice && product.originalPrice > product.price && (
-                    <div className="flex items-center">
-                      <span className="w-32 text-sm text-[#666] shrink-0">Regular Price</span>
-                      <span className="text-sm">Tk {product.originalPrice.toLocaleString()}</span>
-                    </div>
-                  )}
+                  {product.originalPrice &&
+                    product.originalPrice > product.price && (
+                      <div className="flex items-center">
+                        <span className="w-32 text-sm text-muted-foreground shrink-0">
+                          Regular Price
+                        </span>
+                        <span className="text-sm">
+                          Tk {product.originalPrice.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
 
                   <div className="flex items-center">
-                    <span className="w-32 text-sm text-[#666] shrink-0">Brand</span>
+                    <span className="w-32 text-sm text-muted-foreground shrink-0">
+                      Brand
+                    </span>
                     {product.brandSlug ? (
                       <Link
                         href={`/brand/${product.brandSlug}`}
@@ -192,23 +223,32 @@ export default async function ProductDetailPage({
                         {product.brand}
                       </Link>
                     ) : (
-                      <span className="text-sm">{product.brand || 'N/A'}</span>
+                      <span className="text-sm">{product.brand || "N/A"}</span>
                     )}
                   </div>
                   <div className="flex items-center">
-                    <span className="w-32 text-sm text-[#666] shrink-0">Category</span>
+                    <span className="w-32 text-sm text-muted-foreground shrink-0">
+                      Category
+                    </span>
                     <span className="text-sm">
                       {product.category ? (
-                        <Link href={`/category/${product.categorySlug}`} className="text-sm font-medium hover:text-orange-600 transition-colors">
+                        <Link
+                          href={`/category/${product.categorySlug}`}
+                          className="text-sm font-medium hover:text-orange-600 transition-colors"
+                        >
                           {product.category}
                         </Link>
                       ) : (
-                        <span className="text-[#666] italic">Uncategorized</span>
+                        <span className="text-muted-foreground italic">
+                          Uncategorized
+                        </span>
                       )}
                     </span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-0">
-                    <span className="w-32 hidden sm:block text-sm text-[#666] shrink-0">Stock</span>
+                    <span className="w-32 hidden sm:block text-sm text-muted-foreground shrink-0">
+                      Stock
+                    </span>
                     <div className="flex items-center gap-2 flex-wrap">
                       {product.stock > 0 ? (
                         <>
@@ -217,14 +257,23 @@ export default async function ProductDetailPage({
                           </Badge>
                           {product.stock <= 10 ? (
                             <p className="text-[12px] font-black text-orange-600 tracking-tight animate-pulse">
-                              Hurry! Only <span className="text-red-600">{product.stock}</span> items left
+                              Hurry! Only{" "}
+                              <span className="text-red-600">
+                                {product.stock}
+                              </span>{" "}
+                              items left
                             </p>
                           ) : (
-                            <p className="text-[12px] text-zinc-500">({product.stock} Available)</p>
+                            <p className="text-[12px] text-muted-foreground">
+                              ({product.stock} Available)
+                            </p>
                           )}
                         </>
                       ) : (
-                        <Badge variant="destructive" className="font-medium text-[12px] px-1.5 py-0 rounded-[2px]">
+                        <Badge
+                          variant="destructive"
+                          className="font-medium text-[12px] px-1.5 py-0 rounded-[2px]"
+                        >
                           Out of Stock
                         </Badge>
                       )}
@@ -241,22 +290,35 @@ export default async function ProductDetailPage({
 
         {/* Reviews and Tabs with Suspense boundary */}
         <div className="mt-16 md:mt-24" id="reviews">
-          <Suspense fallback={<div className="h-40 flex items-center justify-center border-2 border-dashed border-zinc-100 uppercase text-[10px] font-black tracking-widest text-zinc-300">Synchronizing reviews...</div>}>
+          <Suspense
+            fallback={
+              <div className="h-40 flex items-center justify-center border-2 border-dashed border-border uppercase text-[10px] font-black tracking-widest text-muted-foreground">
+                Synchronizing reviews...
+              </div>
+            }
+          >
             <ProductDetailsTabs product={product} reviews={reviews} />
           </Suspense>
         </div>
       </div>
 
       {/* Related Products with own Suspense boundary */}
-      <Suspense fallback={
-        <section className="py-10 border-t container">
-          <Skeleton className="h-10 w-64 mb-6 rounded-none" />
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-6">
-            {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="aspect-[3/4] rounded-none" />)}
-          </div>
-        </section>
-      }>
-        <RelatedProducts categoryId={product.categoryId} currentProductId={product.id} />
+      <Suspense
+        fallback={
+          <section className="py-10 border-t container">
+            <Skeleton className="h-10 w-64 mb-6" />
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-6">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Skeleton key={i} className="aspect-[3/4]" />
+              ))}
+            </div>
+          </section>
+        }
+      >
+        <RelatedProducts
+          categoryId={product.categoryId}
+          currentProductId={product.id}
+        />
       </Suspense>
     </>
   );

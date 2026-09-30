@@ -107,27 +107,27 @@ export default function CouponsPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black uppercase tracking-tighter">Coupon Management</h1>
-          <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">Create and manage shop discounts</p>
+          <h1 className="text-xl font-bold tracking-tight">Coupon management</h1>
+          <p className="text-xs text-muted-foreground font-medium tracking-normal">Create and manage shop discounts</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingCoupon(null)} className="rounded-none bg-black text-white px-6 font-bold uppercase tracking-widest text-xs h-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none transition-all">
+            <Button onClick={() => setEditingCoupon(null)} className="rounded-[10px] bg-primary text-primary-foreground px-6 font-bold uppercase tracking-widest text-xs h-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none transition-all">
               <Plus className="mr-2 h-4 w-4" /> New Coupon
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-none border-zinc-200 sm:max-w-[500px]">
+          <DialogContent className="rounded-[16px] border-border sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle className="text-xl font-black uppercase tracking-tighter">
-                {editingCoupon ? "Edit Coupon" : "Create New Coupon"}
+              <DialogTitle className="text-lg font-bold tracking-tight">
+                {editingCoupon ? "Edit coupon" : "Create new coupon"}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreateOrUpdate} className="space-y-4 pt-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-zinc-400">Coupon Code</label>
+                <label className="text-[10px] font-black uppercase text-muted-foreground">Coupon Code</label>
                 <Input 
                   placeholder="e.g. SUMMER25" 
-                  className="rounded-none border-zinc-200 h-12 uppercase font-black"
+                  className="rounded-[10px] border-border h-12 uppercase font-black"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   required
@@ -136,23 +136,23 @@ export default function CouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">Type</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">Type</label>
                   <Select value={formData.discountType} onValueChange={(val) => setFormData({ ...formData, discountType: val })}>
-                    <SelectTrigger className="rounded-none border-zinc-200 h-12 font-black uppercase text-[10px]">
+                    <SelectTrigger className="rounded-[10px] border-border h-12 font-black uppercase text-[10px]">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none border-zinc-200">
+                    <SelectContent className="rounded-[10px] border-border">
                       <SelectItem value="percentage">Percentage (%)</SelectItem>
                       <SelectItem value="fixed">Fixed Amount (Tk)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">Value</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">Value</label>
                   <Input 
                     type="number"
                     placeholder="e.g. 10" 
-                    className="rounded-none border-zinc-200 h-12 font-black"
+                    className="rounded-[10px] border-border h-12 font-black"
                     value={formData.discountValue}
                     onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
                     required
@@ -162,20 +162,20 @@ export default function CouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">Min Order (Tk)</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">Min Order (Tk)</label>
                   <Input 
                     type="number"
-                    className="rounded-none border-zinc-200 h-12 font-black"
+                    className="rounded-[10px] border-border h-12 font-black"
                     value={formData.minOrderAmount}
                     onChange={(e) => setFormData({ ...formData, minOrderAmount: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">Max Discount (Tk)</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">Max Discount (Tk)</label>
                   <Input 
                     type="number"
                     placeholder="Optional"
-                    className="rounded-none border-zinc-200 h-12 font-black"
+                    className="rounded-[10px] border-border h-12 font-black"
                     value={formData.maxDiscountAmount}
                     onChange={(e) => setFormData({ ...formData, maxDiscountAmount: e.target.value })}
                   />
@@ -184,22 +184,22 @@ export default function CouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">Usage Limit</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">Usage Limit</label>
                   <Input 
                     type="number"
                     placeholder="Infinite if empty"
-                    className="rounded-none border-zinc-200 h-12 font-black"
+                    className="rounded-[10px] border-border h-12 font-black"
                     value={formData.usageLimit}
                     onChange={(e) => setFormData({ ...formData, usageLimit: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">Status</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">Status</label>
                   <Select value={formData.isActive ? "true" : "false"} onValueChange={(val) => setFormData({ ...formData, isActive: val === "true" })}>
-                    <SelectTrigger className="rounded-none border-zinc-200 h-12 font-black uppercase text-[10px]">
+                    <SelectTrigger className="rounded-[10px] border-border h-12 font-black uppercase text-[10px]">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none border-zinc-200">
+                    <SelectContent className="rounded-[10px] border-border">
                       <SelectItem value="true">Active</SelectItem>
                       <SelectItem value="false">Inactive</SelectItem>
                     </SelectContent>
@@ -209,26 +209,26 @@ export default function CouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">Start Date</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">Start Date</label>
                   <Input 
                     type="date"
-                    className="rounded-none border-zinc-200 h-12 font-black"
+                    className="rounded-[10px] border-border h-12 font-black"
                     value={formData.startDate}
                     onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-zinc-400">End Date</label>
+                  <label className="text-[10px] font-black uppercase text-muted-foreground">End Date</label>
                   <Input 
                     type="date"
-                    className="rounded-none border-zinc-200 h-12 font-black"
+                    className="rounded-[10px] border-border h-12 font-black"
                     value={formData.endDate}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                   />
                 </div>
               </div>
 
-              <Button type="submit" disabled={isPending} className="w-full h-14 bg-black text-white hover:bg-zinc-900 rounded-none font-black uppercase tracking-[0.2em] text-xs">
+              <Button type="submit" disabled={isPending} className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-[10px] font-black uppercase tracking-[0.2em] text-xs">
                 {isPending ? "Saving..." : (editingCoupon ? "Update Coupon" : "Create Coupon")}
               </Button>
             </form>
@@ -237,9 +237,9 @@ export default function CouponsPage() {
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input 
-          className="pl-10 h-12 rounded-none border-zinc-200 bg-white" 
+          className="pl-10 h-12 rounded-[10px] border-border bg-card" 
           placeholder="Filter by coupon code..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -248,39 +248,39 @@ export default function CouponsPage() {
 
       <div className="grid gap-4">
         {isLoading ? (
-          <div className="p-12 text-center text-zinc-400 uppercase font-black text-xs tracking-widest bg-zinc-50 border-2 border-dashed">Loading coupons...</div>
+          <div className="p-12 text-center text-muted-foreground uppercase font-black text-xs tracking-widest bg-muted border-2 border-dashed">Loading coupons...</div>
         ) : filteredCoupons.length === 0 ? (
-          <div className="p-12 text-center text-zinc-400 uppercase font-black text-xs tracking-widest bg-zinc-50 border-2 border-dashed">No coupons found.</div>
+          <div className="p-12 text-center text-muted-foreground uppercase font-black text-xs tracking-widest bg-muted border-2 border-dashed">No coupons found.</div>
         ) : (
           filteredCoupons.map((coupon) => (
-            <Card key={coupon.id} className="rounded-none border-zinc-200 p-6 bg-white overflow-hidden relative group">
+            <Card key={coupon.id} className="rounded-[16px] border-border p-6 bg-card overflow-hidden relative group">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                 <div className="flex items-center gap-6">
-                  <div className="h-16 w-16 bg-zinc-50 rounded-none border border-zinc-100 flex flex-col items-center justify-center text-zinc-800">
+                  <div className="h-16 w-16 bg-muted rounded-[12px] border border-border flex flex-col items-center justify-center text-foreground">
                     <Percent className="h-5 w-5 mb-1" />
                     <span className="text-[10px] font-black uppercase">{coupon.discountType === 'percentage' ? '%' : 'Tk'}</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-3">
                       <h3 className="text-xl font-black uppercase tracking-tighter">{coupon.code}</h3>
-                      <Badge className={cn("rounded-none px-2 py-0 text-[9px] font-black uppercase tracking-widest", coupon.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-100 shadow-none" : "bg-red-50 text-red-700 border-red-100 shadow-none")}>
+                      <Badge className={cn("rounded-full px-2 py-0 text-[9px] font-black uppercase tracking-widest", coupon.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-100 shadow-none" : "bg-red-50 text-red-700 border-red-100 shadow-none")}>
                         {coupon.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
                     <div className="flex flex-wrap items-center gap-4 mt-2">
-                       <div className="flex items-center gap-1 text-zinc-500">
+                       <div className="flex items-center gap-1 text-muted-foreground">
                           <DollarSign className="h-3 w-3" />
                           <span className="text-[10px] font-bold uppercase">
                             {coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `Tk ${coupon.discountValue} OFF`}
                           </span>
                        </div>
-                       <div className="flex items-center gap-1 text-zinc-500">
+                       <div className="flex items-center gap-1 text-muted-foreground">
                           <History className="h-3 w-3" />
                           <span className="text-[10px] font-bold uppercase italic">
                             Used {coupon.usedCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : ""} times
                           </span>
                        </div>
-                       <div className="flex items-center gap-1 text-zinc-500">
+                       <div className="flex items-center gap-1 text-muted-foreground">
                           <CheckCircle2 className="h-3 w-3" />
                           <span className="text-[10px] font-bold uppercase">Min Spend: Tk {coupon.minOrderAmount}</span>
                        </div>
@@ -288,20 +288,20 @@ export default function CouponsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6 border-l border-zinc-100 pl-6 h-full">
+                <div className="flex items-center gap-6 border-l border-border pl-6 h-full">
                   <div className="hidden xl:block">
-                     <p className="text-[9px] font-black uppercase text-zinc-400 tracking-widest mb-1">Validity</p>
+                     <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mb-1">Validity</p>
                      <div className="flex items-center gap-2 text-[10px] font-black">
                         {coupon.startDate ? format(new Date(coupon.startDate), "MMM dd, yyyy") : "Anytime"}
-                        <span className="text-zinc-300">→</span>
+                        <span className="text-muted-foreground">→</span>
                         {coupon.endDate ? format(new Date(coupon.endDate), "MMM dd, yyyy") : "Forever"}
                      </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="icon" onClick={() => handleEdit(coupon)} className="rounded-none border-zinc-200 h-10 w-10 hover:bg-[#ff5a00] hover:text-white hover:border-[#ff5a00] transition-all">
+                    <Button variant="outline" size="icon" onClick={() => handleEdit(coupon)} className="rounded-[10px] border-border h-10 w-10 hover:bg-[#ff5a00] hover:text-white hover:border-[#ff5a00] transition-all">
                       <Edit2 className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="icon" onClick={() => handleDelete(coupon.id)} className="rounded-none border-zinc-200 h-10 w-10 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all">
+                    <Button variant="outline" size="icon" onClick={() => handleDelete(coupon.id)} className="rounded-[10px] border-border h-10 w-10 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -309,7 +309,7 @@ export default function CouponsPage() {
               </div>
               
               {/* Background accent */}
-              <div className="absolute right-0 top-0 h-full w-24 bg-zinc-50/30 -skew-x-12 translate-x-12 pointer-events-none" />
+              <div className="absolute right-0 top-0 h-full w-24 bg-muted/30 -skew-x-12 translate-x-12 pointer-events-none" />
             </Card>
           ))
         )}

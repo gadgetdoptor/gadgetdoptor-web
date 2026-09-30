@@ -36,7 +36,7 @@ export function Overview({ data }: { data: any[] }) {
                     content={({ active, payload }) => {
                         if (active && payload && payload.length) {
                             return (
-                                <div className="bg-black text-white p-3 text-[10px] font-black uppercase tracking-widest border-0 rounded-none shadow-xl">
+                                <div className="bg-black text-white p-3 text-xs font-semibold tracking-normal border-0 rounded-[10px] shadow-xl">
                                     <p className="mb-1">{new Date(payload[0].payload.date).toLocaleDateString('en-US', { dateStyle: 'long' })}</p>
                                     <p className="text-orange-500">Revenue: Tk {payload[0].value}</p>
                                 </div>

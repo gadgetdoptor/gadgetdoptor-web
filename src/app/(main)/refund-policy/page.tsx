@@ -1,13 +1,18 @@
 import { Breadcrumb } from "@/components/layout/breadcrumb";
 import type { Metadata } from "next";
 import { RotateCcw, ShieldCheck, Clock, Truck, FileCheck, HelpCircle } from "lucide-react";
+import { getSiteSettings } from "@/lib/data";
 
-export const metadata: Metadata = {
-    title: "Refund & Return Policy - Gadget Doptor",
-    description: "Read our transparent refund and return policy at Gadget Doptor.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const settings = await getSiteSettings();
+    return {
+        title: `Refund & Return Policy - ${settings.siteName}`,
+        description: `Read our transparent refund and return policy at ${settings.siteName}.`,
+    };
+}
 
-export default function RefundPolicyPage() {
+export default async function RefundPolicyPage() {
+    const settings = await getSiteSettings();
     return (
         <div className="container py-12 max-w-4xl">
             <div className="mb-12">
@@ -28,8 +33,8 @@ export default function RefundPolicyPage() {
                     <div className="flex gap-4 items-start">
                         <RotateCcw className="h-8 w-8 text-orange-600 shrink-0" />
                         <div>
-                            <h2 className="text-xl font-bold text-black mb-2">Our 7-Day Satisfaction Guarantee</h2>
-                            <p className="text-zinc-600 leading-relaxed text-sm">
+                            <h2 className="text-xl font-bold text-foreground mb-2">Our 7-Day Satisfaction Guarantee</h2>
+                            <p className="text-muted-foreground leading-relaxed text-sm">
                                 We want you to be completely satisfied with your purchase. If a product is defective or doesn't match the description, you can return it within <strong>7 days</strong> of delivery for an exchange or a full refund.
                             </p>
                         </div>
@@ -37,21 +42,21 @@ export default function RefundPolicyPage() {
                 </section>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="p-6 border border-zinc-100 rounded-lg hover:shadow-md transition-shadow">
+                    <div className="p-6 border border-border rounded-lg hover:shadow-md transition-shadow">
                         <Clock className="h-6 w-6 text-orange-600 mb-4" />
                         <h3 className="font-bold text-lg mb-2">Return Window</h3>
-                        <p className="text-sm text-zinc-500">Items must be returned within 7 days of receiving the order.</p>
+                        <p className="text-sm text-muted-foreground">Items must be returned within 7 days of receiving the order.</p>
                     </div>
-                    <div className="p-6 border border-zinc-100 rounded-lg hover:shadow-md transition-shadow">
+                    <div className="p-6 border border-border rounded-lg hover:shadow-md transition-shadow">
                         <ShieldCheck className="h-6 w-6 text-orange-600 mb-4" />
                         <h3 className="font-bold text-lg mb-2">Product Condition</h3>
-                        <p className="text-sm text-zinc-500">Items must be unused, in original packaging, with all tags attached.</p>
+                        <p className="text-sm text-muted-foreground">Items must be unused, in original packaging, with all tags attached.</p>
                     </div>
                 </div>
 
-                <div className="space-y-8 text-zinc-700 leading-relaxed">
+                <div className="space-y-8 text-foreground/80 leading-relaxed">
                     <section>
-                        <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6 flex items-center gap-2 underline underline-offset-8 decoration-orange-500/30">
+                        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-6 flex items-center gap-2 underline underline-offset-8 decoration-orange-500/30">
                             1. Conditions for Return
                         </h2>
                         <p className="mb-4 font-medium italic">You may request a return if:</p>
@@ -63,8 +68,8 @@ export default function RefundPolicyPage() {
                         </ul>
                     </section>
 
-                    <section className="bg-zinc-50 p-8 border border-zinc-200">
-                        <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6 flex items-center gap-2">
+                    <section className="bg-muted p-8 border border-border">
+                        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-6 flex items-center gap-2">
                             2. Non-Returnable Items
                         </h2>
                         <p className="mb-4">For health and safety reasons, certain items cannot be returned:</p>
@@ -83,45 +88,45 @@ export default function RefundPolicyPage() {
                     </section>
 
                     <section>
-                        <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6 flex items-center gap-2 underline underline-offset-8 decoration-orange-500/30">
+                        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-6 flex items-center gap-2 underline underline-offset-8 decoration-orange-500/30">
                             3. The Return Process
                         </h2>
                         <div className="space-y-6">
                             <div className="flex gap-4">
-                                <span className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center font-bold shrink-0">1</span>
+                                <span className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0">1</span>
                                 <div>
-                                    <h4 className="font-bold text-black uppercase text-sm tracking-widest">Contact Support</h4>
-                                    <p className="text-sm text-zinc-500">Email us at support@gadgetdoptor.vercel.app or call 01746887593 with your order ID and photos of the product.</p>
+                                    <h4 className="font-bold text-foreground uppercase text-sm tracking-widest">Contact Support</h4>
+                                    <p className="text-sm text-muted-foreground">Email us at {settings.contactEmail} or call {settings.contactPhone} with your order ID and photos of the product.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
-                                <span className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center font-bold shrink-0">2</span>
+                                <span className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0">2</span>
                                 <div>
-                                    <h4 className="font-bold text-black uppercase text-sm tracking-widest">Inspection</h4>
-                                    <p className="text-sm text-zinc-500">Our team will review your request within 24-48 hours. If approved, we will arrange for a pickup.</p>
+                                    <h4 className="font-bold text-foreground uppercase text-sm tracking-widest">Inspection</h4>
+                                    <p className="text-sm text-muted-foreground">Our team will review your request within 24-48 hours. If approved, we will arrange for a pickup.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
-                                <span className="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center font-bold shrink-0">3</span>
+                                <span className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0">3</span>
                                 <div>
-                                    <h4 className="font-bold text-black uppercase text-sm tracking-widest">Refund Selection</h4>
-                                    <p className="text-sm text-zinc-500">Choose between an exchange, store credit, or a refund to your original payment method.</p>
+                                    <h4 className="font-bold text-foreground uppercase text-sm tracking-widest">Refund Selection</h4>
+                                    <p className="text-sm text-muted-foreground">Choose between an exchange, store credit, or a refund to your original payment method.</p>
                                 </div>
                             </div>
                         </div>
                     </section>
 
                     <section className="border-t border-dashed pt-8">
-                        <h2 className="text-2xl font-black uppercase tracking-tight text-black mb-6 flex items-center gap-2">
+                        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-6 flex items-center gap-2">
                             4. Refund Timeline
                         </h2>
                         <ul className="space-y-4">
                             <li className="flex items-center gap-3">
-                                <Truck className="h-5 w-5 text-zinc-400 shrink-0" />
+                                <Truck className="h-5 w-5 text-muted-foreground shrink-0" />
                                 <span className="text-sm"><strong>Original Method:</strong> 5-10 business days after inspection approval.</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <FileCheck className="h-5 w-5 text-zinc-400 shrink-0" />
+                                <FileCheck className="h-5 w-5 text-muted-foreground shrink-0" />
                                 <span className="text-sm"><strong>Store Credit:</strong> Instant after inspection approval.</span>
                             </li>
                         </ul>
@@ -137,8 +142,8 @@ export default function RefundPolicyPage() {
                                 <p className="text-xs text-zinc-400 uppercase tracking-widest">Our support team is here to help you 24/7</p>
                             </div>
                             <div className="flex gap-4">
-                                <a href="tel:01746887593" className="bg-orange-600 hover:bg-orange-700 px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-colors">Call Now</a>
-                                <a href="mailto: gadgetdoptor@gmail.com" className="bg-white text-black hover:bg-zinc-200 px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-colors">Email Us</a>
+                                <a href={`tel:${settings.contactPhone}`} className="bg-orange-600 hover:bg-orange-700 px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-colors">Call Now</a>
+                                <a href={`mailto:${settings.contactEmail}`} className="bg-white text-black hover:bg-zinc-200 px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-colors">Email Us</a>
                             </div>
                         </div>
                     </section>

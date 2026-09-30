@@ -10,18 +10,21 @@ import { CartSheet } from "@/components/cart/cart-sheet";
 import { useCart } from "@/context/cart-context";
 import { SearchInput } from "./search-input";
 import { Search, User, Menu, X, ShoppingBag } from "lucide-react";
-import { SITE_CONFIG } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/auth-context";
+import { useSiteSettings } from "@/context/settings-context";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 import { Category } from "@/lib/types";
 import { TopBar } from "./top-bar";
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 
-const SearchBarFallback = () => <Skeleton className="h-10 w-full bg-zinc-100" />;
-const DesktopSearchBarFallback = () => <Skeleton className="h-10 w-full min-w-[350px] bg-zinc-100" />;
+const SearchBarFallback = () => <Skeleton className="h-10 w-full bg-muted" />;
+const DesktopSearchBarFallback = () => (
+  <Skeleton className="h-10 w-full min-w-[350px] bg-muted" />
+);
 
 interface HeaderProps {
   categories?: Category[];
@@ -30,6 +33,7 @@ interface HeaderProps {
 export function Header({ categories = [] }: HeaderProps) {
   const { isDrawerOpen, setDrawerOpen } = useCart();
   const { user } = useAuth();
+  const settings = useSiteSettings();
   const [isMobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -64,7 +68,11 @@ export function Header({ categories = [] }: HeaderProps) {
       // Always show at top
       if (currentScrollY < 100) {
         setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && !isMobileSearchOpen && !isDrawerOpen) {
+      } else if (
+        currentScrollY > lastScrollY &&
+        !isMobileSearchOpen &&
+        !isDrawerOpen
+      ) {
         // Scrolling down
         setIsVisible(false);
       } else {
@@ -79,22 +87,21 @@ export function Header({ categories = [] }: HeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isMobileSearchOpen, isDrawerOpen]);
 
-
   return (
-    <header className={cn(
-      "sticky z-50 w-full flex flex-col backdrop-blur-md bg-white/70 border-b border-zinc-200/50 shadow-sm transition-all duration-300",
-      isVisible ? "top-0" : "top-0 lg:-top-9"
-    )}>
-
+    <header
+      className={cn(
+        "sticky z-50 w-full flex flex-col backdrop-blur-md bg-background/70 border-b border-border/50 shadow-sm transition-all duration-300",
+        isVisible ? "top-0" : "top-0 lg:-top-9",
+      )}
+    >
       {/* Top Bar Wrapper */}
-      <div className="hidden sm:block h-9 border-b border-zinc-200/50">
+      <div className="hidden sm:block h-9 border-b border-border/50">
         <TopBar />
       </div>
 
       {/* Main Header */}
-      <div className="w-full text-black">
+      <div className="w-full text-foreground">
         <div className="container flex h-16 items-center">
-
           {/* Mobile Header */}
           <div className="flex w-full items-center justify-between min-[1200px]:hidden h-full py-4">
             {/* Left side: Menu + Logo */}
@@ -102,8 +109,8 @@ export function Header({ categories = [] }: HeaderProps) {
               <MobileNav categories={categories} />
               <Link href="/" className="inline-block">
                 <NextImage
-                  src="/gadgetdoptor-logo.webp"
-                  alt={SITE_CONFIG.name}
+                  src={settings.siteLogo}
+                  alt={settings.siteName}
                   width={160}
                   height={120}
 
@@ -115,25 +122,50 @@ export function Header({ categories = [] }: HeaderProps) {
 
             {/* Right side: Search, Cart, Profile */}
             <div className="flex items-center gap-1.5">
-              <Button variant="ghost" size="icon" className="rounded-none bg-zinc-100/50 text-black hover:bg-zinc-100 hover:text-orange-500" onClick={() => setMobileSearchOpen(p => !p)}>
-                <Search className={cn("h-5 w-5", isMobileSearchOpen && "text-orange-500")} />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500"
+                onClick={() => setMobileSearchOpen((p) => !p)}
+              >
+                <Search
+                  className={cn(
+                    "h-5 w-5",
+                    isMobileSearchOpen && "text-orange-500",
+                  )}
+                />
                 <span className="sr-only">Toggle Search</span>
               </Button>
-              <CartIcon onClick={() => setDrawerOpen(true)} className="text-black bg-zinc-100/50 hover:bg-zinc-100 hover:text-orange-500" />
-              <Button variant="ghost" size="icon" className="rounded-none bg-zinc-100/50 text-black hover:bg-zinc-100 hover:text-orange-500" asChild>
-                <Link href={user ? "/account" : "/login"} aria-label="Login or view account">
-                  <User className={cn("h-5 w-5", user && "text-orange-500")} />
+              <ThemeToggle className="bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500"
+                asChild
+              >
+                <Link
+                  href={user ? "/account" : "/login"}
+                  aria-label="Login or view account"
+                >
+                  <User className="h-5 w-5" />
                 </Link>
               </Button>
+              <CartIcon
+                onClick={() => setDrawerOpen(true)}
+                className="text-foreground bg-muted/50 hover:bg-muted hover:text-orange-500"
+              />
             </div>
           </div>
 
           {/* Desktop Header */}
           <div className="hidden min-[1200px]:flex w-full items-center justify-between h-full">
-            <Link href="/" className="inline-block hover:opacity-90 transition-opacity mr-12">
+            <Link
+              href="/"
+              className="inline-block hover:opacity-90 transition-opacity mr-12"
+            >
               <NextImage
-                src="/gadgetdoptor-logo.webp"
-                alt={SITE_CONFIG.name}
+                src={settings.siteLogo}
+                alt={settings.siteName}
                 width={200}
                 height={200}
                 priority
@@ -148,23 +180,27 @@ export function Header({ categories = [] }: HeaderProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button variant="ghost" className="h-9 rounded-none bg-zinc-100/50 text-black hover:bg-zinc-100 hover:text-orange-500 gap-2 px-4 shadow-sm" asChild>
-                <Link href={user ? "/account" : "/login"} aria-label="Login or view account">
-                  <User className={cn("h-5 w-5", user && "text-orange-500")} />
-                  <div className="flex flex-col items-start hidden lg:flex">
-                    <span className="text-[10px] uppercase text-zinc-500 leading-none">Account</span>
-                    <span className="text-sm font-bold leading-none">{user ? 'My Profile' : 'Login / Register'}</span>
-                  </div>
+              <ThemeToggle className="h-9 bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500 shadow-sm" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500 shadow-sm"
+                asChild
+              >
+                <Link
+                  href={user ? "/account" : "/login"}
+                  aria-label="Login or view account"
+                >
+                  <User className="h-5 w-5" />
                 </Link>
               </Button>
 
               <CartIcon
                 onClick={() => setDrawerOpen(true)}
-                className="text-black bg-zinc-100/50 hover:bg-zinc-100 hover:text-orange-500 shadow-sm transition-colors h-9 px-4"
+                className="text-foreground bg-muted/50 hover:bg-muted hover:text-orange-500 shadow-sm transition-colors h-9 px-4"
               />
             </div>
           </div>
-
         </div>
       </div>
 
@@ -173,7 +209,7 @@ export function Header({ categories = [] }: HeaderProps) {
 
       {/* Mobile Search */}
       {isMobileSearchOpen && (
-        <div className="min-[1200px]:hidden border-t border-zinc-100 bg-white/95 backdrop-blur-md">
+        <div className="min-[1200px]:hidden border-t border-border bg-background/95 backdrop-blur-md">
           <div className="container py-3">
             <Suspense fallback={<SearchBarFallback />}>
               <SearchInput />

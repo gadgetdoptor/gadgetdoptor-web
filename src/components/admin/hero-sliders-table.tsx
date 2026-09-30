@@ -105,7 +105,7 @@ export function HeroSlidersTable({ sliders }: HeroSlidersTableProps) {
         </div>
       </div>
 
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-[16px] border overflow-hidden">
         <Table className="border-collapse [&_td]:border [&_th]:border">
           <TableHeader>
             <TableRow>
@@ -149,7 +149,7 @@ export function HeroSlidersTable({ sliders }: HeroSlidersTableProps) {
                   {slider.isActive ? (
                     <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">Active</Badge>
                   ) : (
-                    <Badge variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-gray-200">Inactive</Badge>
+                    <Badge variant="secondary" className="bg-muted text-muted-foreground hover:bg-muted border-border">Inactive</Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-center">

@@ -46,7 +46,7 @@ export function ProductShare({ productName, className }: ProductShareProps) {
 
     return (
         <div className={cn("space-y-3", className)}>
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Share This Product</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Share This Product</p>
             <div className="flex flex-wrap items-center gap-2">
                 {shareLinks.map((link) => (
                     <a
@@ -55,7 +55,7 @@ export function ProductShare({ productName, className }: ProductShareProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={cn(
-                            "flex h-8 w-8 items-center justify-center text-white transition-all hover:scale-110",
+                            "flex h-8 w-8 items-center justify-center rounded-lg text-white transition-all hover:scale-110",
                             link.color
                         )}
                         title={`Share on ${link.name}`}
@@ -63,8 +63,8 @@ export function ProductShare({ productName, className }: ProductShareProps) {
                         {link.icon}
                     </a>
                 ))}
-                <div className="flex h-8 w-8 items-center justify-center bg-zinc-100 border border-zinc-200 hover:bg-zinc-200 transition-all cursor-pointer">
-                    <CopyButton value={currentUrl} className="text-zinc-600 hover:text-black" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted border border-border hover:bg-muted-foreground/20 transition-all cursor-pointer">
+                    <CopyButton value={currentUrl} className="text-muted-foreground hover:text-foreground" />
                 </div>
             </div>
         </div>

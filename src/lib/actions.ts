@@ -5,12 +5,13 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { db } from '@/lib/db';
-import { products, brands, categories, heroSliders, users, orders, orderItems, reviews, coupons, admins, settings } from '@/lib/schema';
+import { products, brands, categories, heroSliders, users, orders, orderItems, reviews, coupons, admins, settings, activityLogs, deliveryLocations } from '@/lib/schema';
 import { eq, and, ne, desc, inArray, or, sql, asc, count as drizzleCount } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { getProducts, getProductById, getBrandById, getCategoryById, getHeroSliderById } from './data';
 import { generateSlug } from '@/lib/utils';
 import { sendTelegramNotification, sendContactMessageNotification } from './telegram';
+import { logActivity } from '@/lib/logger';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import bcrypt from 'bcryptjs';
 
@@ -130,6 +131,8 @@ export async function createProduct(data: unknown) {
     };
   }
 
+  await logActivity({ event: 'PRODUCT_CREATE', message: `Created product "${validatedFields.data.name}" (SKU ${sku}).` });
+
   revalidatePath('/admin/products');
   revalidatePath('/', 'layout');
   redirect('/admin/products');
@@ -207,6 +210,8 @@ export async function updateProduct(id: string, data: unknown) {
     };
   }
 
+  await logActivity({ event: 'PRODUCT_UPDATE', message: `Updated product "${validatedFields.data.name}" (SKU ${sku}).` });
+
   revalidatePath('/admin/products');
   revalidatePath('/', 'layout');
   redirect('/admin/products');
@@ -222,6 +227,7 @@ export async function deleteProduct(id: string) {
     }
 
     await db.delete(products).where(eq(products.id, id));
+    await logActivity({ event: 'PRODUCT_DELETE', message: `Deleted product "${productToDelete?.name || id}".` });
     revalidatePath('/admin/products');
     revalidatePath('/', 'layout');
     return { message: 'Deleted Product.' };
@@ -256,6 +262,8 @@ export async function deleteMultipleProducts(ids: string[]) {
 
     // 4. Delete products from DB
     await db.delete(products).where(inArray(products.id, ids));
+
+    await logActivity({ event: 'PRODUCT_DELETE', message: `Bulk deleted ${ids.length} products.` });
 
     revalidatePath('/admin/products');
     revalidatePath('/', 'layout');
@@ -728,10 +736,10 @@ const checkoutSchema = z.object({
   firstName: z.string().min(1, "First name is required."),
   lastName: z.string().min(1, "Last name is required."),
   mobile: z.string().min(11, "A valid 11-digit mobile number is required.").max(11, "A valid 11-digit mobile number is required."),
-  email: z.string().email({ message: "Invalid email address." }).optional().or(z.literal('')),
+  email: z.string().min(1, "Email is required.").email({ message: "Invalid email address." }),
   address: z.string().min(1, "Address is required."),
   district: z.string().min(1, "District is required."),
-  deliveryMethod: z.enum(['gaibandha', 'full_country']),
+  deliveryMethod: z.string().min(1, "Delivery location is required."),
   paymentMethod: z.enum(['bkash', 'cod']),
   userId: z.string().optional(),
 });
@@ -755,10 +763,10 @@ export async function processCheckout(
 
   try {
     const orderNumber = `${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 100)}`;
-    const deliveryFee = validatedFields.data.deliveryMethod === 'gaibandha' ? '50.00' : '100.00';
+    const deliveryFee = String(await getDeliveryFeeForLocation(validatedFields.data.deliveryMethod));
 
     // Wrap the entire checkout process in a transaction
-    return await db.transaction(async (tx) => {
+    const result: { success: true; url: string } = await db.transaction(async (tx) => {
       // 1. Verify Stock Availability for ALL items first
       const itemsWithNames: { id: string, name: string }[] = [];
       for (const item of items) {
@@ -850,6 +858,14 @@ export async function processCheckout(
 
       return { success: true, url: `/order-confirmed/${orderNumber}` };
     });
+
+    await logActivity({
+      event: 'ORDER_CREATE',
+      actor: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
+      message: `Order #${orderNumber} placed online for Tk ${totalAmount}.`,
+    });
+
+    return result;
 
   } catch (error: any) {
     if (error?.message === 'NEXT_REDIRECT') throw error;
@@ -950,14 +966,14 @@ export async function syncUserWithNeon(profile: {
 
     if (existingUser) {
       // Update existing user
-      await db.update(users).set({
+      const [updatedUser] = await db.update(users).set({
         email: profile.email || '',
         firstName: profile.firstName,
         lastName: profile.lastName,
         phoneNumber: profile.phoneNumber || existingUser.phoneNumber,
         updatedAt: new Date(),
-      }).where(eq(users.id, profile.uid));
-      return { success: true, user: existingUser };
+      }).where(eq(users.id, profile.uid)).returning();
+      return { success: true, user: updatedUser };
     } else {
       // Create new user
       const [newUser] = await db.insert(users).values({
@@ -1058,7 +1074,7 @@ export async function getAllOrders() {
 
 export async function updateOrderStatus(orderId: string, status: string) {
   try {
-    await db.transaction(async (tx) => {
+    const orderRecord = await db.transaction(async (tx) => {
       const order = await tx.query.orders.findFirst({
         where: eq(orders.id, orderId),
         with: {
@@ -1118,7 +1134,11 @@ export async function updateOrderStatus(orderId: string, status: string) {
       if (status === 'cancelled') updateData.cancelledAt = new Date();
 
       await tx.update(orders).set(updateData).where(eq(orders.id, orderId));
+
+      return order;
     });
+
+    await logActivity({ event: 'ORDER_STATUS_UPDATE', message: `Order #${orderRecord?.orderNumber || orderId} status changed to "${status}".` });
 
     revalidatePath('/admin/orders');
     revalidatePath('/account/orders');
@@ -1140,7 +1160,11 @@ export async function updatePaymentStatus(orderId: string, status: string) {
       updateData.paidAt = new Date();
     }
 
+    const target = await db.query.orders.findFirst({ where: eq(orders.id, orderId), columns: { orderNumber: true } });
+
     await db.update(orders).set(updateData).where(eq(orders.id, orderId));
+
+    await logActivity({ event: 'PAYMENT_STATUS_UPDATE', message: `Order #${target?.orderNumber || orderId} payment status changed to "${status}".` });
 
     revalidatePath('/admin/orders');
     revalidatePath('/admin/dashboard');
@@ -1321,7 +1345,7 @@ export async function createOrderManual(
     const itemsTotal = items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
     const finalTotal = itemsTotal + Number(deliveryFee) - Number(discountAmount);
 
-    return await db.transaction(async (tx) => {
+    const result: { success: true; orderNumber: string; totalAmount: number } = await db.transaction(async (tx) => {
       // 1. Stock Adjustment
       for (const item of items) {
         const product = await tx.query.products.findFirst({
@@ -1382,11 +1406,18 @@ export async function createOrderManual(
 
       await tx.insert(orderItems).values(orderItemsValues);
 
-      revalidatePath('/admin/orders');
-      revalidatePath('/admin/dashboard');
-
       return { success: true, orderNumber, totalAmount: finalTotal };
     });
+
+    await logActivity({
+      event: isOnline ? 'ORDER_CREATE' : 'POS_ORDER_CREATE',
+      message: `${isOnline ? 'Online' : 'POS'} order ${orderNumber} created for Tk ${finalTotal} (${customerName || 'Walk-in'}).`,
+    });
+
+    revalidatePath('/admin/orders');
+    revalidatePath('/admin/dashboard');
+
+    return result;
   } catch (error: any) {
     console.error('Order Creation Error:', error);
     return { success: false, message: error.message || "Failed to create order" };
@@ -1418,6 +1449,7 @@ export async function createCoupon(data: any) {
       endDate: data.endDate ? new Date(data.endDate) : null,
       usedCount: 0,
     });
+    await logActivity({ event: 'COUPON_CREATE', message: `Created coupon "${data.code.toUpperCase().trim()}".` });
     revalidatePath('/admin/coupons');
     return { success: true };
   } catch (error: any) {
@@ -1439,6 +1471,7 @@ export async function updateCoupon(id: string, data: any) {
       endDate: data.endDate ? new Date(data.endDate) : null,
       updatedAt: new Date(),
     }).where(eq(coupons.id, id));
+    await logActivity({ event: 'COUPON_UPDATE', message: `Updated coupon "${data.code?.toUpperCase().trim() || id}".` });
     revalidatePath('/admin/coupons');
     return { success: true };
   } catch (error) {
@@ -1449,7 +1482,9 @@ export async function updateCoupon(id: string, data: any) {
 
 export async function deleteCoupon(id: string) {
   try {
+    const target = await db.query.coupons.findFirst({ where: eq(coupons.id, id), columns: { code: true } });
     await db.delete(coupons).where(eq(coupons.id, id));
+    await logActivity({ event: 'COUPON_DELETE', message: `Deleted coupon "${target?.code || id}".` });
     revalidatePath('/admin/coupons');
     return { success: true };
   } catch (error) {
@@ -1516,12 +1551,14 @@ export async function loginAdmin(data: any) {
     });
 
     if (!admin) {
+      await logActivity({ event: 'AUTH_LOGIN', actor: identifier, status: 'failed', message: `Failed login attempt for "${identifier}": unknown account.` });
       return { success: false, message: "Invalid credentials." };
     }
 
     const passwordMatch = await bcrypt.compare(password, admin.password);
 
     if (!passwordMatch) {
+      await logActivity({ event: 'AUTH_LOGIN', actor: admin.username, status: 'failed', message: `Failed login attempt for "${admin.username}": incorrect password.` });
       return { success: false, message: "Invalid credentials." };
     }
 
@@ -1539,6 +1576,8 @@ export async function loginAdmin(data: any) {
       path: "/",
     });
 
+    await logActivity({ event: 'AUTH_LOGIN', actor: admin.username, message: `Admin "${admin.username}" authenticated successfully.` });
+
     return { success: true };
   } catch (error) {
     console.error("Login Error:", error);
@@ -1547,6 +1586,8 @@ export async function loginAdmin(data: any) {
 }
 
 export async function logoutAdmin() {
+  const username = (await cookies()).get("admin_username")?.value;
+  await logActivity({ event: 'AUTH_LOGOUT', actor: username, message: `Admin "${username || 'unknown'}" logged out.` });
   (await cookies()).delete("admin_session");
   (await cookies()).delete("admin_username");
   redirect("/admin/login");
@@ -1572,6 +1613,7 @@ export async function createAdmin(data: any) {
       id,
       password: hashedPassword,
     });
+    await logActivity({ event: 'ADMIN_CREATE', message: `Created staff account "${data.username}".` });
     revalidatePath('/admin/administration');
     return { success: true };
   } catch (error: any) {
@@ -1592,6 +1634,7 @@ export async function updateAdmin(id: string, data: any) {
       .set(updateData)
       .where(eq(admins.id, id));
 
+    await logActivity({ event: 'ADMIN_UPDATE', message: `Updated staff account "${data.username || id}".` });
     revalidatePath('/admin/administration');
     return { success: true };
   } catch (error: any) {
@@ -1602,7 +1645,9 @@ export async function updateAdmin(id: string, data: any) {
 export async function deleteAdmin(id: string) {
   try {
     // Prevent self-deletion if we had a session ID, but for now simple delete
+    const target = await db.query.admins.findFirst({ where: eq(admins.id, id), columns: { username: true } });
     await db.delete(admins).where(eq(admins.id, id));
+    await logActivity({ event: 'ADMIN_DELETE', message: `Deleted staff account "${target?.username || id}".` });
     revalidatePath('/admin/administration');
     return { success: true };
   } catch (error: any) {
@@ -1643,6 +1688,102 @@ export async function getSettings() {
   }
 }
 
+// DELIVERY LOCATIONS ACTIONS
+export async function getDeliveryLocations() {
+  try {
+    return await db.query.deliveryLocations.findMany({
+      orderBy: (deliveryLocations, { asc }) => [asc(deliveryLocations.sortOrder), asc(deliveryLocations.name)],
+    });
+  } catch (error) {
+    console.error("Failed to fetch delivery locations:", error);
+    return [];
+  }
+}
+
+const deliveryLocationSchema = z.object({
+  name: z.string().min(1, "Location name is required."),
+  fee: z.coerce.number().min(0, "Fee must be a positive number."),
+  isDefault: z.boolean().optional(),
+  sortOrder: z.coerce.number().optional(),
+});
+
+export async function createDeliveryLocation(data: z.infer<typeof deliveryLocationSchema>) {
+  const validated = deliveryLocationSchema.safeParse(data);
+  if (!validated.success) {
+    return { success: false, message: validated.error.issues[0].message };
+  }
+  try {
+    if (validated.data.isDefault) {
+      await db.update(deliveryLocations).set({ isDefault: false });
+    }
+    await db.insert(deliveryLocations).values({
+      id: createId(),
+      name: validated.data.name,
+      fee: String(validated.data.fee),
+      isDefault: validated.data.isDefault || false,
+      sortOrder: validated.data.sortOrder || 0,
+    });
+    revalidatePath('/admin/settings');
+    revalidatePath('/checkout');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error.message?.includes('unique') ? 'A location with this name already exists.' : error.message };
+  }
+}
+
+export async function updateDeliveryLocation(id: string, data: z.infer<typeof deliveryLocationSchema>) {
+  const validated = deliveryLocationSchema.safeParse(data);
+  if (!validated.success) {
+    return { success: false, message: validated.error.issues[0].message };
+  }
+  try {
+    if (validated.data.isDefault) {
+      await db.update(deliveryLocations).set({ isDefault: false });
+    }
+    await db.update(deliveryLocations)
+      .set({
+        name: validated.data.name,
+        fee: String(validated.data.fee),
+        isDefault: validated.data.isDefault || false,
+        sortOrder: validated.data.sortOrder || 0,
+        updatedAt: new Date(),
+      })
+      .where(eq(deliveryLocations.id, id));
+    revalidatePath('/admin/settings');
+    revalidatePath('/checkout');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error.message?.includes('unique') ? 'A location with this name already exists.' : error.message };
+  }
+}
+
+export async function deleteDeliveryLocation(id: string) {
+  try {
+    await db.delete(deliveryLocations).where(eq(deliveryLocations.id, id));
+    revalidatePath('/admin/settings');
+    revalidatePath('/checkout');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+}
+
+export async function getDeliveryFeeForLocation(locationName: string): Promise<number> {
+  try {
+    const location = await db.query.deliveryLocations.findFirst({
+      where: eq(deliveryLocations.name, locationName),
+    });
+    if (location) return Number(location.fee);
+    const fallback = await db.query.deliveryLocations.findFirst({
+      orderBy: (deliveryLocations, { asc }) => [asc(deliveryLocations.sortOrder)],
+    });
+    return fallback ? Number(fallback.fee) : 100;
+  } catch (error) {
+    console.error("Failed to fetch delivery fee:", error);
+    return 100;
+  }
+}
+
 export async function updateSettings(data: { key: string, value: string }[]) {
   try {
     for (const item of data) {
@@ -1661,6 +1802,7 @@ export async function updateSettings(data: { key: string, value: string }[]) {
           },
         });
     }
+    await logActivity({ event: 'SETTINGS_UPDATE', message: `Updated ${data.length} setting${data.length === 1 ? '' : 's'}: ${data.map(d => d.key).join(', ')}.` });
     revalidatePath('/', 'layout');
     return { success: true };
   } catch (error: any) {
@@ -1720,5 +1862,182 @@ export async function submitContactForm(data: unknown) {
   } catch (error) {
     console.error('Contact Form Submission Error:', error);
     return { success: false, message: "Failed to send message. Please try again later." };
+  }
+}
+
+// SYSTEM LOGS ACTIONS
+export async function getSystemLogs(limit: number = 100) {
+  try {
+    return await db.query.activityLogs.findMany({
+      orderBy: desc(activityLogs.createdAt),
+      limit,
+    });
+  } catch (error) {
+    console.error('Failed to fetch system logs:', error);
+    return [];
+  }
+}
+
+export async function getLogStats() {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const [[totalRow], [todayRow], [failedTodayRow]] = await Promise.all([
+      db.select({ count: drizzleCount() }).from(activityLogs),
+      db.select({ count: drizzleCount() }).from(activityLogs).where(sql`${activityLogs.createdAt} >= ${startOfDay}`),
+      db.select({ count: drizzleCount() }).from(activityLogs).where(and(eq(activityLogs.status, 'failed'), sql`${activityLogs.createdAt} >= ${startOfDay}`)),
+    ]);
+
+    const total = totalRow?.count || 0;
+    const today = todayRow?.count || 0;
+    const failedToday = failedTodayRow?.count || 0;
+
+    return { total, today, failedToday };
+  } catch (error) {
+    console.error('Failed to fetch log stats:', error);
+    return { total: 0, today: 0, failedToday: 0 };
+  }
+}
+
+export async function getReportsData(days: number = 30) {
+  const emptyState = {
+    stats: {
+      totalRevenue: 0,
+      totalOrders: 0,
+      avgOrderValue: 0,
+      totalCustomers: 0,
+      revenueGrowth: 0,
+      lowStockCount: 0,
+    },
+    revenueTrend: [] as { date: string; total: number }[],
+    orderStatusBreakdown: [] as { status: string; count: number }[],
+    paymentMethodBreakdown: [] as { method: string; count: number; total: number }[],
+    topProducts: [] as { id: string; name: string; image: string | null; quantitySold: number; revenue: number }[],
+    topCategories: [] as { id: string; name: string; revenue: number; unitsSold: number }[],
+  };
+
+  try {
+    const now = new Date();
+    const rangeStart = new Date(now);
+    rangeStart.setDate(rangeStart.getDate() - (days - 1));
+    rangeStart.setHours(0, 0, 0, 0);
+
+    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    const [
+      revenueResult,
+      paidOrdersCount,
+      totalCustomersCount,
+      lowStockResult,
+      thisMonthRevenueResult,
+      lastMonthRevenueResult,
+      revenueTrendRaw,
+      orderStatusRaw,
+      paymentMethodRaw,
+      topProductsRaw,
+      topCategoriesRaw,
+    ] = await Promise.all([
+      db.select({ total: sql<number>`COALESCE(SUM(CAST(${orders.totalAmount} AS NUMERIC)), 0)` })
+        .from(orders).where(eq(orders.paymentStatus, 'paid')),
+      db.select({ count: drizzleCount() }).from(orders).where(eq(orders.paymentStatus, 'paid')),
+      db.select({ count: drizzleCount() }).from(users),
+      db.select({ count: drizzleCount() }).from(products).where(sql`${products.stock} <= 5`),
+      db.select({ total: sql<number>`COALESCE(SUM(CAST(${orders.totalAmount} AS NUMERIC)), 0)` })
+        .from(orders).where(and(eq(orders.paymentStatus, 'paid'), sql`${orders.createdAt} >= ${startOfThisMonth}`)),
+      db.select({ total: sql<number>`COALESCE(SUM(CAST(${orders.totalAmount} AS NUMERIC)), 0)` })
+        .from(orders).where(and(
+          eq(orders.paymentStatus, 'paid'),
+          sql`${orders.createdAt} >= ${startOfLastMonth}`,
+          sql`${orders.createdAt} < ${startOfThisMonth}`
+        )),
+      db.select({
+        date: sql<string>`TO_CHAR(${orders.createdAt}, 'YYYY-MM-DD')`,
+        total: sql<number>`SUM(CAST(${orders.totalAmount} AS NUMERIC))`,
+      })
+        .from(orders)
+        .where(and(eq(orders.paymentStatus, 'paid'), sql`${orders.createdAt} >= ${rangeStart}`))
+        .groupBy(sql`TO_CHAR(${orders.createdAt}, 'YYYY-MM-DD')`)
+        .orderBy(asc(sql`TO_CHAR(${orders.createdAt}, 'YYYY-MM-DD')`)),
+      db.select({ status: orders.orderStatus, count: drizzleCount() })
+        .from(orders)
+        .groupBy(orders.orderStatus),
+      db.select({
+        method: orders.paymentMethod,
+        count: drizzleCount(),
+        total: sql<number>`COALESCE(SUM(CAST(${orders.totalAmount} AS NUMERIC)), 0)`,
+      })
+        .from(orders)
+        .where(eq(orders.paymentStatus, 'paid'))
+        .groupBy(orders.paymentMethod),
+      db.select({
+        id: products.id,
+        name: products.name,
+        image: sql<string>`${products.images}[1]`,
+        quantitySold: sql<number>`SUM(${orderItems.quantity})`,
+        revenue: sql<number>`SUM(${orderItems.quantity} * CAST(${orderItems.price} AS NUMERIC))`,
+      })
+        .from(orderItems)
+        .innerJoin(orders, eq(orderItems.orderId, orders.id))
+        .innerJoin(products, eq(orderItems.productId, products.id))
+        .where(eq(orders.paymentStatus, 'paid'))
+        .groupBy(products.id, products.name, products.images)
+        .orderBy(desc(sql`SUM(${orderItems.quantity} * CAST(${orderItems.price} AS NUMERIC))`))
+        .limit(5),
+      db.select({
+        id: categories.id,
+        name: categories.name,
+        revenue: sql<number>`SUM(${orderItems.quantity} * CAST(${orderItems.price} AS NUMERIC))`,
+        unitsSold: sql<number>`SUM(${orderItems.quantity})`,
+      })
+        .from(orderItems)
+        .innerJoin(orders, eq(orderItems.orderId, orders.id))
+        .innerJoin(products, eq(orderItems.productId, products.id))
+        .innerJoin(categories, eq(products.categoryId, categories.id))
+        .where(eq(orders.paymentStatus, 'paid'))
+        .groupBy(categories.id, categories.name)
+        .orderBy(desc(sql`SUM(${orderItems.quantity} * CAST(${orderItems.price} AS NUMERIC))`))
+        .limit(5),
+    ]);
+
+    const totalRevenue = Number(revenueResult[0]?.total || 0);
+    const totalOrders = Number(paidOrdersCount[0]?.count || 0);
+    const thisMonthRevenue = Number(thisMonthRevenueResult[0]?.total || 0);
+    const lastMonthRevenue = Number(lastMonthRevenueResult[0]?.total || 0);
+    const revenueGrowth = lastMonthRevenue > 0
+      ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+      : (thisMonthRevenue > 0 ? 100 : 0);
+
+    return {
+      stats: {
+        totalRevenue,
+        totalOrders,
+        avgOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0,
+        totalCustomers: Number(totalCustomersCount[0]?.count || 0),
+        revenueGrowth,
+        lowStockCount: Number(lowStockResult[0]?.count || 0),
+      },
+      revenueTrend: revenueTrendRaw.map(item => ({ date: item.date, total: Number(item.total) })),
+      orderStatusBreakdown: orderStatusRaw.map(item => ({ status: item.status, count: Number(item.count) })),
+      paymentMethodBreakdown: paymentMethodRaw.map(item => ({
+        method: item.method,
+        count: Number(item.count),
+        total: Number(item.total),
+      })),
+      topProducts: topProductsRaw.map(item => ({
+        ...item,
+        quantitySold: Number(item.quantitySold),
+        revenue: Number(item.revenue),
+      })),
+      topCategories: topCategoriesRaw.map(item => ({
+        ...item,
+        revenue: Number(item.revenue),
+        unitsSold: Number(item.unitsSold),
+      })),
+    };
+  } catch (error) {
+    console.error('Get Reports Data Error:', error);
+    return emptyState;
   }
 }

@@ -130,3 +130,21 @@ export type Order = {
   updatedAt: Date;
   items?: Item[];
 };
+
+export type SiteSettings = {
+  siteName: string;
+  siteTagline: string;
+  siteLogo: string;
+  favicon: string;
+  contactPhone: string;
+  contactWhatsapp: string;
+  contactEmail: string;
+  contactAddress: string;
+  socialFacebook: string;
+  socialInstagram: string;
+  socialYoutube: string;
+  socialTiktok: string;
+  seoMetaTitle: string;
+  seoMetaDescription: string;
+  seoKeywords: string;
+};

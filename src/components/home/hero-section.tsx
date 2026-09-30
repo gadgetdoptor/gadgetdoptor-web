@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -22,11 +21,15 @@ type HeroSectionProps = {
   sliders: HeroSlider[];
   promoTop?: HeroSlider;
   promoBottom?: HeroSlider;
-}
+};
 
-export function HeroSection({ sliders, promoTop, promoBottom }: HeroSectionProps) {
+export function HeroSection({
+  sliders,
+  promoTop,
+  promoBottom,
+}: HeroSectionProps) {
   const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true })
+    Autoplay({ delay: 5000, stopOnInteraction: true }),
   );
 
   const [api, setApi] = React.useState<CarouselApi>();
@@ -68,8 +71,8 @@ export function HeroSection({ sliders, promoTop, promoBottom }: HeroSectionProps
                 <CarouselContent>
                   {sliders.map((slider, index) => (
                     <CarouselItem key={slider.id}>
-                      <Link href={slider.link || '#'} className="block">
-                        <Card className="overflow-hidden border-none rounded-none p-0">
+                      <Link href={slider.link || "#"} className="block">
+                        <Card className="overflow-hidden border-none p-0">
                           <CardContent className="relative p-0 aspect-[16/9]">
                             <Image
                               src={slider.imageUrl}
@@ -95,8 +98,10 @@ export function HeroSection({ sliders, promoTop, promoBottom }: HeroSectionProps
                           key={index}
                           onClick={() => api?.scrollTo(index)}
                           className={cn(
-                            "h-2 w-2 rounded-none transition-all duration-300",
-                            current === index ? "w-4 bg-primary" : "bg-white/50"
+                            "h-2 w-2 transition-all duration-300",
+                            current === index
+                              ? "w-4 bg-primary"
+                              : "bg-white/50",
                           )}
                           aria-label={`Go to slide ${index + 1}`}
                         />
@@ -106,15 +111,17 @@ export function HeroSection({ sliders, promoTop, promoBottom }: HeroSectionProps
                 )}
               </Carousel>
             ) : (
-              <Card className="overflow-hidden h-full rounded-none p-0">
+              <Card className="overflow-hidden h-full p-0">
                 <CardContent className="relative w-full h-full p-0 bg-muted flex items-center justify-center aspect-video">
-                  <p className="text-muted-foreground">No active carousel slides.</p>
+                  <p className="text-muted-foreground">
+                    No active carousel slides.
+                  </p>
                 </CardContent>
               </Card>
             )}
           </div>
           <div className="lg:col-span-1 grid grid-cols-2 lg:grid-cols-1 lg:grid-rows-2 gap-4">
-            <Card className="overflow-hidden rounded-none w-full h-full p-0">
+            <Card className="overflow-hidden w-full h-full p-0">
               {promoTop ? (
                 <Link href={promoTop.link || "#"} className="block h-full">
                   <CardContent className="relative w-full h-full p-0 aspect-video lg:aspect-auto">
@@ -130,11 +137,13 @@ export function HeroSection({ sliders, promoTop, promoBottom }: HeroSectionProps
                 </Link>
               ) : (
                 <CardContent className="relative w-full h-full p-0 bg-muted flex items-center justify-center aspect-video">
-                  <p className="text-muted-foreground text-sm">No promo banner</p>
+                  <p className="text-muted-foreground text-sm">
+                    No promo banner
+                  </p>
                 </CardContent>
               )}
             </Card>
-            <Card className="overflow-hidden rounded-none w-full h-full p-0">
+            <Card className="overflow-hidden w-full h-full p-0">
               {promoBottom ? (
                 <Link href={promoBottom.link || "#"} className="block h-full">
                   <CardContent className="relative w-full h-full p-0 aspect-video lg:aspect-auto">
@@ -150,7 +159,9 @@ export function HeroSection({ sliders, promoTop, promoBottom }: HeroSectionProps
                 </Link>
               ) : (
                 <CardContent className="relative w-full h-full p-0 bg-muted flex items-center justify-center aspect-video">
-                  <p className="text-muted-foreground text-sm">No promo banner</p>
+                  <p className="text-muted-foreground text-sm">
+                    No promo banner
+                  </p>
                 </CardContent>
               )}
             </Card>

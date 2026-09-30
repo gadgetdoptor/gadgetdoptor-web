@@ -137,7 +137,7 @@ export function CategoryForm({ category, categories, onSubmit, hideCard = false,
                                 <button
                                     type="button"
                                     onClick={() => form.setValue("name", "")}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-md hover:bg-muted opacity-0 group-hover/field:opacity-100 transition-opacity"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-[6px] hover:bg-muted opacity-0 group-hover/field:opacity-100 transition-opacity"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -198,7 +198,7 @@ export function CategoryForm({ category, categories, onSubmit, hideCard = false,
                 control={form.control}
                 name="isFeatured"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-[10px] border p-4">
                         <FormControl>
                             <Checkbox
                                 checked={field.value}
@@ -239,7 +239,7 @@ export function CategoryForm({ category, categories, onSubmit, hideCard = false,
                 {hideCard ? (
                     formContent
                 ) : (
-                    <Card>
+                    <Card className="rounded-[16px]">
                         <CardContent className="pt-6">
                             {formContent}
                         </CardContent>

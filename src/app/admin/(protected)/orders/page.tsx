@@ -9,7 +9,7 @@ export default async function OrdersPage() {
   const initialOrders = await getAllOrders();
 
   const stats = [
-    { label: 'Total Orders', value: initialOrders.length, icon: ShoppingCart, color: 'text-zinc-600' },
+    { label: 'Total orders', value: initialOrders.length, icon: ShoppingCart, color: 'text-muted-foreground' },
     { label: 'Pending', value: initialOrders.filter(o => o.orderStatus === 'pending').length, icon: Clock, color: 'text-yellow-600' },
     { label: 'Processing', value: initialOrders.filter(o => o.orderStatus === 'processing').length, icon: Package, color: 'text-blue-600' },
     { label: 'Shipped', value: initialOrders.filter(o => o.orderStatus === 'shipped').length, icon: Truck, color: 'text-indigo-600' },
@@ -20,17 +20,17 @@ export default async function OrdersPage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-black font-headline uppercase tracking-tight">Order Management</h1>
-        <p className="text-zinc-500 text-sm">Monitor, track, and manage customer orders across your shop.</p>
+        <h1 className="text-xl font-bold font-headline tracking-tight">Order management</h1>
+        <p className="text-muted-foreground text-xs">Monitor, track, and manage customer orders across your shop.</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((stat) => (
-          <Card key={stat.label} className="rounded-none border-zinc-200">
+          <Card key={stat.label} className="rounded-[16px] border-border">
             <CardContent className=" flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">{stat.label}</p>
-                <p className="text-2xl font-black">{stat.value}</p>
+                <p className="text-[11px] font-bold tracking-normal text-muted-foreground mb-1">{stat.label}</p>
+                <p className="text-2xl font-black tracking-tight">{stat.value}</p>
               </div>
               <stat.icon className={`h-6 w-6 ${stat.color} opacity-40`} />
             </CardContent>

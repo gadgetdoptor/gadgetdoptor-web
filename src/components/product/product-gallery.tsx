@@ -65,7 +65,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
       <div className="relative group w-full max-w-[600px]">
         <div
           ref={containerRef}
-          className="relative overflow-hidden cursor-crosshair bg-[#f5f6f7] aspect-square"
+          className="relative overflow-hidden rounded-2xl cursor-crosshair bg-muted/30 aspect-square"
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setZoomStyle({})}
           onTouchStart={onTouchStart}
@@ -89,11 +89,11 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
           {/* Overlay Badges */}
           <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity md:flex hidden pointer-events-none">
-            <div className="bg-white/90 backdrop-blur-sm px-2.5 py-1.5 flex items-center gap-2 shadow-sm">
-              <ZoomIn className="w-3.5 h-3.5 text-black" />
+            <div className="bg-background/90 backdrop-blur-sm px-2.5 py-1.5 flex items-center gap-2 shadow-sm">
+              <ZoomIn className="w-3.5 h-3.5 text-foreground" />
               <span className="text-[10px] font-bold uppercase tracking-tight">Hover to Zoom</span>
             </div>
-            <div className="bg-black text-white px-2.5 py-1.5 flex items-center gap-2 shadow-sm">
+            <div className="bg-foreground text-background px-2.5 py-1.5 flex items-center gap-2 shadow-sm">
               <Maximize2 className="w-3.5 h-3.5" />
               <span className="text-[10px] font-bold uppercase tracking-tight">Click to Enlarge</span>
             </div>
@@ -105,7 +105,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 text-black hover:bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 text-foreground hover:bg-background/50 opacity-0 group-hover:opacity-100 transition-opacity z-10"
               onClick={(e) => { e.stopPropagation(); handlePrev(); }}
             >
               <ChevronLeft className="h-6 w-6" />
@@ -113,7 +113,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 text-black hover:bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 text-foreground hover:bg-background/50 opacity-0 group-hover:opacity-100 transition-opacity z-10"
               onClick={(e) => { e.stopPropagation(); handleNext(); }}
             >
               <ChevronRight className="h-6 w-6" />
@@ -128,8 +128,8 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           <button
             key={index}
             className={cn(
-              "relative h-16 w-16 md:h-20 md:w-20 shrink-0 overflow-hidden border-2 transition-all",
-              activeIndex === index ? "border-orange-500" : "border-zinc-200 opacity-60 hover:opacity-100"
+              "relative h-16 w-16 md:h-20 md:w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all",
+              activeIndex === index ? "border-orange-500" : "border-border opacity-60 hover:opacity-100"
             )}
             onClick={() => setActiveIndex(index)}
           >
@@ -140,12 +140,12 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
       {/* Lightbox / Fullscreen Dialog */}
       <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
-        <DialogContent showCloseButton={false} className="max-w-screen h-[calc(80vh)] w-screen p-0 border-none bg-white flex flex-col items-center justify-center gap-0 outline-none">
+        <DialogContent showCloseButton={false} className="max-w-screen h-[calc(80vh)] w-screen p-0 border-none bg-background flex flex-col items-center justify-center gap-0 outline-none">
           {/* Header with Title and Close */}
-          <div className="absolute top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md z-50 flex items-center justify-between px-6 border-b border-zinc-100">
+          <div className="absolute top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-md z-50 flex items-center justify-between px-6 border-b border-border">
             <div className="flex flex-col">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600 leading-none mb-1">Product Gallery</span>
-              <DialogTitle className="text-sm md:text-base font-bold text-black truncate max-w-[200px] md:max-w-md uppercase tracking-tight leading-tight">
+              <DialogTitle className="text-sm md:text-base font-bold text-foreground truncate max-w-[200px] md:max-w-md uppercase tracking-tight leading-tight">
                 {productName}
               </DialogTitle>
             </div>
@@ -153,16 +153,16 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 text-black hover:bg-zinc-100 rounded-full transition-colors shrink-0"
+              className="h-10 w-10 text-foreground hover:bg-muted rounded-full transition-colors shrink-0"
               onClick={() => setIsLightboxOpen(false)}
             >
               <X className="h-6 w-6" />
             </Button>
           </div>
 
-          <div className="relative w-full flex-1 flex items-center justify-center p-4 md:p-12 overflow-hidden bg-white mt-16">
+          <div className="relative w-full flex-1 flex items-center justify-center p-4 md:p-12 overflow-hidden bg-background mt-16">
             <div
-              className="relative w-full h-full max-w-5xl bg-[#f5f6f7] flex items-center justify-center overflow-hidden"
+              className="relative w-full h-full max-w-5xl bg-muted/30 flex items-center justify-center overflow-hidden"
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
@@ -182,7 +182,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 md:h-14 md:w-14 text-black hover:bg-white/90 bg-white/50 backdrop-blur-sm rounded-full shadow-lg transition-all z-10"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 md:h-14 md:w-14 text-foreground hover:bg-background/90 bg-background/50 backdrop-blur-sm rounded-full shadow-lg transition-all z-10"
                   onClick={(e) => { e.stopPropagation(); handlePrev(); }}
                 >
                   <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
@@ -190,7 +190,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 md:h-14 md:w-14 text-black hover:bg-white/90 bg-white/50 backdrop-blur-sm rounded-full shadow-lg transition-all z-10"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 md:h-14 md:w-14 text-foreground hover:bg-background/90 bg-background/50 backdrop-blur-sm rounded-full shadow-lg transition-all z-10"
                   onClick={(e) => { e.stopPropagation(); handleNext(); }}
                 >
                   <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
@@ -209,7 +209,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                     key={i}
                     className={cn(
                       "h-1.5 rounded-full transition-all duration-300",
-                      i === activeIndex ? "w-8 bg-orange-600" : "w-1.5 bg-zinc-300"
+                      i === activeIndex ? "w-8 bg-orange-600" : "w-1.5 bg-muted-foreground/40"
                     )}
                   />
                 ))}

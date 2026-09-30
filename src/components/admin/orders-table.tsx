@@ -100,45 +100,45 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
 
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case 'pending': return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 uppercase text-[10px] rounded-none">Pending</Badge>;
-            case 'processing': return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 uppercase text-[10px] rounded-none">Processing</Badge>;
-            case 'shipped': return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 uppercase text-[10px] rounded-none">Shipped</Badge>;
-            case 'delivered': return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 uppercase text-[10px] rounded-none">Delivered</Badge>;
-            default: return <Badge variant="outline" className="uppercase text-[10px] rounded-none">{status}</Badge>;
+            case 'pending': return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 uppercase text-[10px] rounded-full">Pending</Badge>;
+            case 'processing': return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 uppercase text-[10px] rounded-full">Processing</Badge>;
+            case 'shipped': return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 uppercase text-[10px] rounded-full">Shipped</Badge>;
+            case 'delivered': return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 uppercase text-[10px] rounded-full">Delivered</Badge>;
+            default: return <Badge variant="outline" className="uppercase text-[10px] rounded-full">{status}</Badge>;
         }
     };
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-white p-4 border border-zinc-200">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-card p-4 border border-border">
                 <div className="relative w-full sm:max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder="Search by order #, name or phone..."
-                        className="pl-10 h-11 rounded-none border-zinc-200 focus-visible:ring-black"
+                        className="pl-10 h-11 rounded-[10px] border-border focus-visible:ring-ring"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Button variant="outline" className="rounded-none h-11 border-zinc-200 font-bold uppercase text-[10px] tracking-widest gap-2">
+                    <Button variant="outline" className="rounded-[10px] h-11 border-border font-bold uppercase text-[10px] tracking-widest gap-2">
                         <Filter className="h-3 w-3" /> Filter
                     </Button>
-                    <Button variant="outline" className="rounded-none h-11 border-zinc-200 font-bold uppercase text-[10px] tracking-widest flex-1 sm:flex-none" asChild>
+                    <Button variant="outline" className="rounded-[10px] h-11 border-border font-bold uppercase text-[10px] tracking-widest flex-1 sm:flex-none" asChild>
                         <Link href="/admin/orders/new">
                             <Plus className="h-3 w-3 mr-2" /> New Order
                         </Link>
                     </Button>
-                    <Button className="rounded-none h-11 bg-black text-white hover:bg-zinc-900 font-bold uppercase text-[10px] tracking-widest flex-1 sm:flex-none">
+                    <Button className="rounded-[10px] h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-bold uppercase text-[10px] tracking-widest flex-1 sm:flex-none">
                         Export
                     </Button>
                 </div>
             </div>
 
-            <div className="border border-zinc-200 bg-white overflow-hidden">
+            <div className="border border-border bg-card overflow-hidden rounded-[16px]">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-zinc-50 hover:bg-zinc-50">
+                        <TableRow className="bg-muted hover:bg-muted">
                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Order Info</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Customer</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
@@ -150,7 +150,7 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                     <TableBody>
                         {filteredOrders.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-40 text-center text-zinc-500">
+                                <TableCell colSpan={6} className="h-40 text-center text-muted-foreground">
                                     <Package className="h-8 w-8 mx-auto mb-2 opacity-20" />
                                     <p className="text-sm">No orders found</p>
                                 </TableCell>
@@ -159,13 +159,13 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                             filteredOrders.map((order) => (
                                 <TableRow
                                     key={order.id}
-                                    className="hover:bg-zinc-50/80 transition-colors cursor-pointer group"
+                                    className="hover:bg-muted/80 transition-colors cursor-pointer group"
                                     onClick={(e) => handleRowClick(e, order.orderNumber)}
                                 >
                                     <TableCell>
                                         <div className="space-y-1">
                                             <p className="font-mono font-bold text-sm group-hover:text-orange-600 transition-colors">#{order.orderNumber}</p>
-                                            <p className="text-[10px] text-zinc-400 font-medium">
+                                            <p className="text-[10px] text-muted-foreground font-medium">
                                                 {format(new Date(order.createdAt), "MMM d, yyyy • h:mm a")}
                                             </p>
                                         </div>
@@ -173,7 +173,7 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                     <TableCell>
                                         <div className="space-y-0.5">
                                             <p className="text-sm font-bold">{order.firstName} {order.lastName}</p>
-                                            <p className="text-[10px] text-zinc-500 font-mono">{order.mobile}</p>
+                                            <p className="text-[10px] text-muted-foreground font-mono">{order.mobile}</p>
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -184,17 +184,17 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                                 <div className="space-y-1">
                                                     {getStatusBadge(order.orderStatus)}
                                                     {order.orderStatus === 'processing' && order.processingAt && (
-                                                        <p className="text-[9px] text-zinc-400 font-medium">
+                                                        <p className="text-[9px] text-muted-foreground font-medium">
                                                             {format(new Date(order.processingAt), "MMM d, h:mm a")}
                                                         </p>
                                                     )}
                                                     {order.orderStatus === 'shipped' && order.shippedAt && (
-                                                        <p className="text-[9px] text-zinc-400 font-medium">
+                                                        <p className="text-[9px] text-muted-foreground font-medium">
                                                             {format(new Date(order.shippedAt), "MMM d, h:mm a")}
                                                         </p>
                                                     )}
                                                     {order.orderStatus === 'delivered' && order.deliveredAt && (
-                                                        <p className="text-[9px] text-zinc-400 font-medium">
+                                                        <p className="text-[9px] text-muted-foreground font-medium">
                                                             {format(new Date(order.deliveredAt), "MMM d, h:mm a")}
                                                         </p>
                                                     )}
@@ -208,13 +208,13 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                         ) : (
                                             <div className="space-y-1">
                                                 <Badge variant="outline" className={cn(
-                                                    "uppercase text-[9px] font-black px-2 py-0.5 rounded-none border-0 shadow-sm",
+                                                    "uppercase text-[9px] font-black px-2 py-0.5 rounded-full border-0 shadow-sm",
                                                     order.paymentStatus === 'paid' ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700 font-bold"
                                                 )}>
                                                     {order.paymentStatus}
                                                 </Badge>
                                                 {order.paymentStatus === 'paid' && order.paidAt && (
-                                                    <p className="text-[9px] text-zinc-400 font-medium">
+                                                    <p className="text-[9px] text-muted-foreground font-medium">
                                                         {format(new Date(order.paidAt), "MMM d, h:mm a")}
                                                     </p>
                                                 )}
@@ -223,11 +223,11 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                     </TableCell>
                                     <TableCell>
                                         <p className="font-black text-sm">Tk {order.totalAmount}</p>
-                                        <p className="text-[9px] text-zinc-400 uppercase tracking-widest">{order.items.length} items</p>
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest">{order.items.length} items</p>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-black" asChild title="Print Invoice">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" asChild title="Print Invoice">
                                                 <Link href={`/admin/orders/${order.orderNumber}/invoice`}>
                                                     <Printer className="h-4 w-4" />
                                                 </Link>
@@ -238,8 +238,8 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-48 rounded-none border-zinc-200">
-                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Manage Order</DropdownMenuLabel>
+                                                <DropdownMenuContent align="end" className="w-48 rounded-[10px] border-border">
+                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manage Order</DropdownMenuLabel>
                                                     <DropdownMenuItem asChild>
                                                         <Link href={`/admin/orders/${order.orderNumber}`} className="cursor-pointer">
                                                             <Eye className="mr-2 h-4 w-4" /> View Details
@@ -251,7 +251,7 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Order Status</DropdownMenuLabel>
+                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Order Status</DropdownMenuLabel>
                                                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'pending')} className="text-yellow-600">
                                                         <Clock className="mr-2 h-4 w-4" /> Mark Pending
                                                     </DropdownMenuItem>
@@ -265,7 +265,7 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                                         <CheckCircle className="mr-2 h-4 w-4" /> Mark Delivered
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Payment Status</DropdownMenuLabel>
+                                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Payment Status</DropdownMenuLabel>
                                                     <DropdownMenuItem onClick={() => handlePaymentUpdate(order.id, 'paid')} className="text-green-600">
                                                         <CheckCircle className="mr-2 h-4 w-4" /> Mark as Paid
                                                     </DropdownMenuItem>

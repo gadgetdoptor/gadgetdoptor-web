@@ -39,31 +39,31 @@ export default function AdminLoginPage() {
     <div className="min-h-screen w-full bg-[#fafafa] flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-50 rounded-full blur-[120px] opacity-60 pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-zinc-100 rounded-full blur-[120px] opacity-60 pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-muted rounded-full blur-[120px] opacity-60 pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-3 bg-black rounded-none mb-4 shadow-xl shadow-zinc-200">
-            <ShieldCheck className="h-8 w-8 text-white" />
+          <div className="inline-flex items-center justify-center p-3 bg-primary rounded-[14px] mb-4 shadow-xl shadow-primary/20">
+            <ShieldCheck className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-black uppercase tracking-tighter text-zinc-900 mb-1">Admin</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Restricted Administration Access</p>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground mb-1">Admin</h1>
+          <p className="text-xs font-medium tracking-normal text-muted-foreground">Restricted administration access</p>
         </div>
 
-        <Card className="rounded-none border-zinc-200 border-t-4 border-t-black shadow-2xl bg-white/80 backdrop-blur-sm">
+        <Card className="rounded-[16px] border-border border-t-4 border-t-primary shadow-2xl bg-card/80 backdrop-blur-sm">
           <CardHeader className="space-y-1 pb-2 pt-8">
-            <CardTitle className="text-xl font-black uppercase tracking-tight">Identity Verification</CardTitle>
-            <CardDescription className="text-xs font-medium text-zinc-500">Enter your credentials to access the shop controls</CardDescription>
+            <CardTitle className="text-lg font-bold tracking-tight">Identity verification</CardTitle>
+            <CardDescription className="text-xs font-medium text-muted-foreground">Enter your credentials to access the shop controls</CardDescription>
           </CardHeader>
           <CardContent className="pt-6 pb-8">
             <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Username / Email</label>
+                <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Username / Email</label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-300" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Enter identifier"
-                    className="pl-10 h-12 rounded-none border-zinc-200 focus-visible:ring-black font-medium"
+                    className="pl-10 h-12 rounded-[10px] border-border focus-visible:ring-ring font-medium"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     required
@@ -72,13 +72,13 @@ export default function AdminLoginPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Secret Key</label>
+                <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Secret Key</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-300" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="pl-10 h-12 rounded-none border-zinc-200 focus-visible:ring-black font-medium"
+                    className="pl-10 h-12 rounded-[10px] border-border focus-visible:ring-ring font-medium"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -86,7 +86,7 @@ export default function AdminLoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-300 hover:text-zinc-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="w-full h-14 bg-black text-white rounded-none font-black uppercase tracking-widest text-xs hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-100 group"
+                  className="w-full h-14 bg-primary text-primary-foreground rounded-[10px] font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-lg shadow-primary/10 group"
                 >
                   {isPending ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -112,7 +112,7 @@ export default function AdminLoginPage() {
           </CardContent>
         </Card>
 
-        <p className="mt-8 text-center text-[10px] font-bold uppercase text-zinc-300 tracking-[0.1em]">
+        <p className="mt-8 text-center text-[10px] font-bold uppercase text-muted-foreground tracking-[0.1em]">
           Powered by gadgetdoptor.net &bull; Automated Security Protocol 4.0
         </p>
       </div>

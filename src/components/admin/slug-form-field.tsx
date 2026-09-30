@@ -59,7 +59,7 @@ export function SlugFormField({ nameFieldName, label }: { nameFieldName: string;
               <button
                 type="button"
                 onClick={() => setValue("slug", "")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-md hover:bg-muted opacity-0 group-hover/field:opacity-100 transition-opacity"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-[6px] hover:bg-muted opacity-0 group-hover/field:opacity-100 transition-opacity"
               >
                 <X className="h-4 w-4" />
               </button>

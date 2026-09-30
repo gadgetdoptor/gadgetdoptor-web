@@ -49,23 +49,20 @@ export default function OrdersPage() {
                         { name: "Orders", href: "/account/orders" }
                     ]}
                 />
-                <h1 className="text-2xl font-bold tracking-tight font-headline mt-4 uppercase">
-                    My Orders
-                </h1>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div className="space-y-4">
                 <AccountNav />
 
-                <div className="md:col-span-11 lg:col-span-10 space-y-4">
+                <div className="space-y-4">
                     {isLoadingOrders && orders.length === 0 ? (
                         <OrdersSkeleton />
                     ) : orders.length === 0 ? (
-                        <div className="border border-dashed border-zinc-200 p-20 text-center bg-zinc-50">
-                            <Package className="h-12 w-12 mx-auto mb-4 text-zinc-300" />
-                            <h2 className="text-lg font-bold font-headline uppercase">No orders yet</h2>
-                            <p className="text-zinc-500 text-sm mb-8 mt-2">When you place an order, it will appear here.</p>
-                            <Link href="/shop" className="px-8 py-4 bg-black text-white font-bold uppercase text-xs tracking-widest inline-flex items-center gap-2">
+                        <div className="rounded-lg border border-dashed border-border p-20 text-center bg-muted">
+                            <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                            <h2 className="text-lg font-bold font-headline">No orders yet</h2>
+                            <p className="text-muted-foreground text-sm mb-8 mt-2">When you place an order, it will appear here.</p>
+                            <Link href="/shop" className="rounded-lg px-8 py-4 bg-primary text-primary-foreground font-bold text-xs inline-flex items-center gap-2">
                                 Start Shopping <ArrowRight className="h-4 w-4" />
                             </Link>
                         </div>
@@ -75,41 +72,41 @@ export default function OrdersPage() {
                                 <Link
                                     key={order.id}
                                     href={`/account/orders/${order.orderNumber}`}
-                                    className="p-4 md:p-6 border border-zinc-100 bg-white hover:border-black transition-all group block shadow-sm"
+                                    className="rounded-lg p-4 md:p-6 border border-border bg-card hover:border-foreground transition-all group block shadow-sm"
                                 >
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-3">
                                                 <p className="font-mono font-black text-lg group-hover:text-orange-600 transition-colors tracking-tighter">#{order.orderNumber}</p>
                                                 <div className={cn(
-                                                    "px-3 py-1 text-[10px] font-black uppercase tracking-widest",
-                                                    order.orderStatus === 'delivered' ? "bg-green-50 text-green-700" : "bg-zinc-100 text-zinc-600"
+                                                    "rounded-lg px-3 py-1 text-[10px] font-black capitalize",
+                                                    order.orderStatus === 'delivered' ? "bg-green-50 text-green-700" : "bg-muted text-muted-foreground"
                                                 )}>
                                                     {order.orderStatus}
                                                 </div>
                                             </div>
-                                            <p className="text-xs text-zinc-400 font-medium">
+                                            <p className="text-xs text-muted-foreground font-medium">
                                                 Placed on {format(new Date(order.createdAt), "MMMM d, yyyy")}
                                             </p>
                                         </div>
                                         <div className="flex items-center justify-between md:text-right gap-4">
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-widest">Total Amount</p>
+                                                <p className="text-[10px] font-bold text-muted-foreground">Total Amount</p>
                                                 <p className="font-black text-lg tracking-tight">Tk {order.totalAmount}</p>
                                             </div>
-                                            <div className="h-10 w-10 flex items-center justify-center border border-zinc-100 group-hover:bg-black group-hover:text-white transition-colors ml-4">
+                                            <div className="rounded-lg h-10 w-10 flex items-center justify-center border border-border group-hover:bg-primary group-hover:text-primary-foreground transition-colors ml-4">
                                                 <ArrowRight className="h-4 w-4" />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="mt-4 pt-4 border-t border-zinc-50 flex flex-wrap gap-2">
+                                    <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2">
                                         {order.items.slice(0, 3).map((item: any, idx: number) => (
-                                            <div key={idx} className="h-10 w-10 border border-zinc-100 bg-zinc-50 p-1 flex items-center justify-center text-[10px] font-bold overflow-hidden">
+                                            <div key={idx} className="rounded-lg h-10 w-10 border border-border bg-muted p-1 flex items-center justify-center text-[10px] font-bold overflow-hidden">
                                                 {item.productId ? '📦' : ''}
                                             </div>
                                         ))}
                                         {order.items.length > 3 && (
-                                            <div className="h-10 px-3 border border-zinc-100 bg-zinc-50 flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                                            <div className="rounded-lg h-10 px-3 border border-border bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">
                                                 +{order.items.length - 3} More items
                                             </div>
                                         )}

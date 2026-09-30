@@ -24,13 +24,8 @@ type CartSheetProps = {
 };
 
 export function CartSheet({ open, onOpenChange }: CartSheetProps) {
-  const {
-    items,
-    totalPrice,
-    totalItems,
-    updateItemQuantity,
-    removeItem,
-  } = useCart();
+  const { items, totalPrice, totalItems, updateItemQuantity, removeItem } =
+    useCart();
 
   const router = useRouter();
   const closedByBackButton = useRef(false);
@@ -51,7 +46,7 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
 
     return () => {
       window.removeEventListener("popstate", handlePopState);
-      
+
       // Remove dummy state if we're closing manually on the same page
       if (window.location.href === originalUrl && !closedByBackButton.current) {
         window.history.back();
@@ -70,9 +65,11 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-[90%] flex-col sm:max-w-lg p-0">
-        <SheetHeader className="p-0 pl-4 pt-4">
-          <SheetTitle >Shopping Cart ({totalItems})</SheetTitle>
+      <SheetContent className="flex w-[90%] flex-col gap-0 sm:max-w-lg p-0">
+        <SheetHeader className="p-4">
+          <SheetTitle className="leading-none">
+            Shopping Cart ({totalItems})
+          </SheetTitle>
         </SheetHeader>
         <Separator />
         {items.length > 0 ? (
@@ -80,8 +77,11 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
             <ScrollArea className="flex-1">
               <div className="flex flex-col gap-4 p-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-4 border border-zinc-100 bg-white p-3 shadow-sm">
-                    <div className="relative border border-zinc-100 size-20 flex-shrink-0 overflow-hidden bg-zinc-50">
+                  <div
+                    key={item.id}
+                    className="flex gap-4 border border-border bg-card p-3 shadow-sm rounded-xl"
+                  >
+                    <div className="relative border border-border rounded-lg size-20 flex-shrink-0 overflow-hidden bg-muted">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -95,18 +95,20 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
                         <h3 className="font-bold text-[13px] uppercase tracking-tight line-clamp-1 leading-tight mb-1">
                           {item.name}
                         </h3>
-                        <p className="text-[11px] font-medium text-zinc-500">
+                        <p className="text-[11px] font-medium text-muted-foreground">
                           Tk {item.price.toLocaleString()}
                         </p>
                       </div>
 
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center border border-zinc-200">
+                        <div className="flex items-center border border-border rounded-lg overflow-hidden">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 rounded-none hover:bg-zinc-50"
-                            onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                            className="h-7 w-7 hover:bg-muted"
+                            onClick={() =>
+                              updateItemQuantity(item.id, item.quantity - 1)
+                            }
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
@@ -116,8 +118,10 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 rounded-none hover:bg-zinc-50"
-                            onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                            className="h-7 w-7 hover:bg-muted"
+                            onClick={() =>
+                              updateItemQuantity(item.id, item.quantity + 1)
+                            }
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -129,7 +133,7 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 text-zinc-400 hover:text-red-600 hover:bg-red-50"
+                            className="h-7 w-7 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
                             onClick={() => removeItem(item.id)}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -145,23 +149,26 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
               <div className="flex w-full flex-col gap-3">
                 <div className="flex justify-between text-base sm:text-lg font-bold">
                   <span>Subtotal</span>
-                  <span>Tk {""}{totalPrice.toLocaleString()}</span>
+                  <span>
+                    Tk {""}
+                    {totalPrice.toLocaleString()}
+                  </span>
                 </div>
                 <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">
                   Shipping and delivery charge are calculated during checkout.
                 </p>
                 <div className="flex flex-col gap-2 mt-2">
-                  <Button 
-                    size="lg" 
-                    className="w-full rounded-none h-12 text-sm sm:text-base" 
+                  <Button
+                    size="lg"
+                    className="w-full h-12 text-sm sm:text-base"
                     onClick={() => handleNavigate("/checkout")}
                   >
                     Proceed to Checkout
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="w-full rounded-none h-12 text-sm sm:text-base" 
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full h-12 text-sm sm:text-base"
                     onClick={() => handleNavigate("/cart")}
                   >
                     View Shopping Cart
@@ -172,7 +179,10 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
           </>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-            <ShoppingBag className="h-24 w-24 text-muted-foreground/50" strokeWidth={1} />
+            <ShoppingBag
+              className="h-24 w-24 text-muted-foreground/50"
+              strokeWidth={1}
+            />
             <h2 className="text-xl font-semibold">Your cart is empty</h2>
             <p className="text-muted-foreground text-sm">
               Looks like you haven't added anything to your cart yet.

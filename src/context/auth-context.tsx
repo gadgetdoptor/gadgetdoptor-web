@@ -19,12 +19,14 @@ interface AuthContextType {
     user: User | null;
     profile: UserProfile | null;
     loading: boolean;
+    refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
     profile: null,
     loading: true,
+    refreshProfile: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -77,8 +79,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return () => unsubscribe();
     }, []);
 
+    const refreshProfile = async () => {
+        if (!user) return;
+        const freshProfile = await getUserProfile(user.uid);
+        setProfile(freshProfile as UserProfile);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, profile, loading }}>
+        <AuthContext.Provider value={{ user, profile, loading, refreshProfile }}>
             {children}
         </AuthContext.Provider>
     );

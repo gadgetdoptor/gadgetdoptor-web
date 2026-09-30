@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
     return (
-        <div className="bg-white min-h-screen">
+        <div className="bg-background min-h-screen">
             {/* --- HERO SECTION --- */}
             <div className="bg-black text-white pt-12 pb-24 relative overflow-hidden">
                 <div className="container relative z-10">
@@ -38,30 +38,30 @@ export default function AboutPage() {
 
             <div className="container -mt-16 relative z-20">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="bg-white p-8 shadow-2xl border border-zinc-100 flex flex-col gap-4">
+                    <div className="bg-card p-8 shadow-2xl border border-border flex flex-col gap-4">
                         <div className="h-12 w-12 bg-orange-500 flex items-center justify-center text-white">
                             <Users className="h-6 w-6" />
                         </div>
                         <h3 className="text-xl font-black uppercase tracking-tight">Our Identity</h3>
-                        <p className="text-zinc-500 text-sm leading-relaxed">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                             Founded on the principles of trust and transparency, Gadget Doptor has grown from a small vision into a leading destination for authentic global and local brands.
                         </p>
                     </div>
-                    <div className="bg-white p-8 shadow-2xl border border-zinc-100 flex flex-col gap-4">
+                    <div className="bg-card p-8 shadow-2xl border border-border flex flex-col gap-4">
                         <div className="h-12 w-12 bg-black flex items-center justify-center text-white">
                             <Target className="h-6 w-6" />
                         </div>
                         <h3 className="text-xl font-black uppercase tracking-tight">Our Mission</h3>
-                        <p className="text-zinc-500 text-sm leading-relaxed">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                             To empower consumers in Bangladesh by providing easy access to high-quality products while ensuring a seamless and secure digital shopping journey.
                         </p>
                     </div>
-                    <div className="bg-white p-8 shadow-2xl border border-zinc-100 flex flex-col gap-4">
+                    <div className="bg-card p-8 shadow-2xl border border-border flex flex-col gap-4">
                         <div className="h-12 w-12 bg-orange-600 flex items-center justify-center text-white">
                             <Rocket className="h-6 w-6" />
                         </div>
                         <h3 className="text-xl font-black uppercase tracking-tight">Our Vision</h3>
-                        <p className="text-zinc-500 text-sm leading-relaxed">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                             To become the most customer-centric online shopping destination in the region, recognized for innovation, reliability, and social responsibility.
                         </p>
                     </div>
@@ -94,9 +94,9 @@ export default function AboutPage() {
                             </div>
                             <h2 className="text-4xl md:text-5xl font-black font-headline tracking-tighter uppercase leading-none">
                                 Crafting the <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-800 to-zinc-500">Future of Retail</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-800 to-zinc-500 dark:from-zinc-200 dark:to-zinc-400">Future of Retail</span>
                             </h2>
-                            <div className="space-y-4 text-zinc-600 leading-relaxed">
+                            <div className="space-y-4 text-muted-foreground leading-relaxed">
                                 <p>
                                     Gadget Doptor started with a simple observation: the digital divide in Bangladesh was preventing talented creators and premium brands from reaching their true audience. We decided to bridge that gap.
                                 </p>
@@ -106,12 +106,12 @@ export default function AboutPage() {
                             </div>
                             <div className="grid grid-cols-2 gap-8 pt-4">
                                 <div className="space-y-2">
-                                    <h4 className="text-2xl font-black text-black">100%</h4>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Authentic Products</p>
+                                    <h4 className="text-2xl font-black text-foreground">100%</h4>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Authentic Products</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <h4 className="text-2xl font-black text-black">24/7</h4>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Customer Support</p>
+                                    <h4 className="text-2xl font-black text-foreground">24/7</h4>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Customer Support</p>
                                 </div>
                             </div>
                         </div>
@@ -120,7 +120,7 @@ export default function AboutPage() {
             </section>
 
             {/* --- CORE VALUES --- */}
-            <section className="py-24 bg-zinc-50 border-y border-zinc-100">
+            <section className="py-24 bg-muted border-y border-border">
                 <div className="container text-center max-w-4xl mx-auto">
                     <div className="space-y-4 mb-16">
                         <div className="flex items-center justify-center gap-2">
@@ -129,31 +129,31 @@ export default function AboutPage() {
                             <div className="h-px w-8 bg-orange-600"></div>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black font-headline tracking-tighter uppercase leading-none">
-                            Values That <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-800 to-zinc-500">Define Us</span>
+                            Values That <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-800 to-zinc-500 dark:from-zinc-200 dark:to-zinc-400">Define Us</span>
                         </h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         <div className="space-y-4">
-                            <div className="h-16 w-16 mx-auto bg-white shadow-xl flex items-center justify-center text-orange-500 rounded-2xl transform hover:rotate-6 transition-transform">
+                            <div className="h-16 w-16 mx-auto bg-card shadow-xl flex items-center justify-center text-orange-500 rounded-2xl transform hover:rotate-6 transition-transform">
                                 <ShieldCheck className="h-8 w-8" />
                             </div>
                             <h4 className="font-bold uppercase tracking-tight">Trust & Security</h4>
-                            <p className="text-sm text-zinc-500 leading-relaxed italic">"Your data and payments are always protected with industry-leading security."</p>
+                            <p className="text-sm text-muted-foreground leading-relaxed italic">"Your data and payments are always protected with industry-leading security."</p>
                         </div>
                         <div className="space-y-4">
-                            <div className="h-16 w-16 mx-auto bg-white shadow-xl flex items-center justify-center text-black rounded-2xl transform hover:-rotate-6 transition-transform text-zinc-800">
+                            <div className="h-16 w-16 mx-auto bg-card shadow-xl flex items-center justify-center rounded-2xl transform hover:-rotate-6 transition-transform text-foreground">
                                 <Award className="h-8 w-8" />
                             </div>
                             <h4 className="font-bold uppercase tracking-tight">Quality First</h4>
-                            <p className="text-sm text-zinc-500 leading-relaxed italic">"We curate only the best products, ensuring every item exceeds expectations."</p>
+                            <p className="text-sm text-muted-foreground leading-relaxed italic">"We curate only the best products, ensuring every item exceeds expectations."</p>
                         </div>
                         <div className="space-y-4">
-                            <div className="h-16 w-16 mx-auto bg-white shadow-xl flex items-center justify-center text-orange-600 rounded-2xl transform hover:rotate-6 transition-transform">
+                            <div className="h-16 w-16 mx-auto bg-card shadow-xl flex items-center justify-center text-orange-600 rounded-2xl transform hover:rotate-6 transition-transform">
                                 <ShoppingBag className="h-8 w-8" />
                             </div>
                             <h4 className="font-bold uppercase tracking-tight">Customer Obsession</h4>
-                            <p className="text-sm text-zinc-500 leading-relaxed italic">"Our success is measured by your satisfaction and shopping experience."</p>
+                            <p className="text-sm text-muted-foreground leading-relaxed italic">"Our success is measured by your satisfaction and shopping experience."</p>
                         </div>
                     </div>
                 </div>

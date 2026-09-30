@@ -8,7 +8,7 @@ export default async function SeedPage() {
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold">Admin Seeding Status</h1>
+      <h1 className="text-xl font-bold tracking-tight">Admin seeding status</h1>
       <div className={`p-4 border ${result.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
         Staff: {result.message}
       </div>

@@ -102,7 +102,7 @@ export function ImageUploader({ value, onChange, disabled = false, aspectRatio =
     <div className={aspectRatio === "video" ? "grid grid-cols-1 gap-4" : "grid grid-cols-3 gap-4"}>
       {localImages.length < maxImages && (
         <div
-          className={`${aspectRatio === "video" ? "aspect-video w-full" : "aspect-square"} border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex flex-col items-center justify-center text-center p-4 cursor-pointer relative`}
+          className={`${aspectRatio === "video" ? "aspect-video w-full" : "aspect-square"} border-2 border-dashed border-border rounded-[12px] hover:bg-muted transition-colors flex flex-col items-center justify-center text-center p-4 cursor-pointer relative`}
         >
           <Upload className="h-8 w-8 text-muted-foreground mb-2" />
           <span className="text-sm text-muted-foreground font-medium">Upload Image</span>
@@ -125,7 +125,7 @@ export function ImageUploader({ value, onChange, disabled = false, aspectRatio =
         return (
           <div
             key={typeof image === 'string' ? image : (image.name + '-' + image.size)}
-            className={`${aspectRatio === "video" ? "aspect-video w-full" : "aspect-square"} relative group rounded-lg overflow-hidden border bg-white`}
+            className={`${aspectRatio === "video" ? "aspect-video w-full" : "aspect-square"} relative group rounded-[12px] overflow-hidden border bg-card`}
             draggable={!disabled}
             onDragStart={(e) => handleDragStart(e, index)}
             onDragEnter={(e) => handleDragEnter(e, index)}

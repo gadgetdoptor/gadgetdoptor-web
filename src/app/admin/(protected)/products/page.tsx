@@ -36,7 +36,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   return (
     <div className="space-y-6 min-w-0">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Products ({totalCount})</h1>
+        <h1 className="text-xl font-bold tracking-tight">Products ({totalCount})</h1>
         <Button asChild className="shrink-0">
           <Link href="/admin/products/new">
             <PlusCircle className="mr-2 h-4 w-4" />

@@ -1,10 +1,27 @@
-import type { Product, Brand, Category, HeroSlider, Review } from '@/lib/types';
+import type { Product, Brand, Category, HeroSlider, Review, SiteSettings } from '@/lib/types';
 import { db } from '@/lib/db';
-import { products as productsTable, categories as categoriesTable, brands as brandsTable, heroSliders as heroSlidersTable, reviews as reviewsTable, settings as settingsTable } from '@/lib/schema';
+import { products as productsTable, categories as categoriesTable, brands as brandsTable, heroSliders as heroSlidersTable, reviews as reviewsTable } from '@/lib/schema';
 import { eq, desc, asc, isNull, sql, or, ilike, and, ne, count as drizzleCount } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
+import { DEFAULT_SITE_SETTINGS, SETTING_KEY_MAP } from '@/lib/settings-defaults';
+
+export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
+  try {
+    const rows = await db.query.settings.findMany();
+    const byKey = new Map(rows.map(r => [r.key, r.value]));
+    const result = { ...DEFAULT_SITE_SETTINGS };
+    for (const field of Object.keys(SETTING_KEY_MAP) as (keyof SiteSettings)[]) {
+      const value = byKey.get(SETTING_KEY_MAP[field]);
+      if (value) result[field] = value;
+    }
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch site settings:', error);
+    return DEFAULT_SITE_SETTINGS;
+  }
+});
 
 // Sitemap helpers
 export async function getAllProductSlugs() {

@@ -7,10 +7,14 @@ import useSWR from "swr";
 import { Printer, MapPin, Phone, Mail, ShoppingBag } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSiteSettings } from "@/context/settings-context";
 
 export default function InvoicePage({ params: paramsPromise }: { params: Promise<{ orderNumber: string }> }) {
     const params = use(paramsPromise);
     const { user, loading: authLoading } = useAuth();
+    const settings = useSiteSettings();
+    const [firstName, ...restName] = settings.siteName.split(' ');
+    const restNameStr = restName.join(' ');
 
     const {
         data: order,
@@ -26,7 +30,7 @@ export default function InvoicePage({ params: paramsPromise }: { params: Promise
 
             // Cleanup: reset title when leaving page
             return () => {
-                document.title = "Gadget Doptor";
+                document.title = settings.siteName;
             };
         }
     }, [order]);
@@ -49,11 +53,11 @@ export default function InvoicePage({ params: paramsPromise }: { params: Promise
     }
 
     if (!order) {
-        return <div className="p-20 text-center font-bold uppercase tracking-widest text-zinc-400">Order not found</div>;
+        return <div className="p-20 text-center font-bold uppercase tracking-widest text-muted-foreground">Order not found</div>;
     }
 
     return (
-        <div className="bg-zinc-50 py-6 print:bg-white print:py-0 min-h-screen print:min-h-0 print:overflow-hidden">
+        <div className="bg-muted py-6 print:bg-white print:py-0 min-h-screen print:min-h-0 print:overflow-hidden">
             <style stroke-width="0">
                 {`
                     @media print {
@@ -91,42 +95,42 @@ export default function InvoicePage({ params: paramsPromise }: { params: Promise
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => window.history.back()}
-                        className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-black transition-colors flex items-center gap-1"
+                        className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                     >
                         ← Back
                     </button>
-                    <h1 className="text-xs font-black uppercase tracking-widest text-zinc-500 italic border-l border-zinc-200 pl-4">Invoice <span className="text-orange-600">Preview</span></h1>
+                    <h1 className="text-xs font-black uppercase tracking-widest text-muted-foreground italic border-l border-border pl-4">Invoice <span className="text-orange-600">Preview</span></h1>
                 </div>
                 <button
                     onClick={handlePrint}
-                    className="bg-black text-white px-4 py-2 font-bold uppercase tracking-widest text-[10px] flex items-center gap-2 hover:bg-zinc-800 transition-colors shadow-lg"
+                    className="bg-primary text-primary-foreground px-4 py-2 font-bold uppercase tracking-widest text-[10px] flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-lg"
                 >
                     <Printer className="h-3 w-3" /> Print
                 </button>
             </div>
 
             {/* Actual Invoice Sheet */}
-            <div className="max-w-3xl mx-auto bg-white border border-zinc-200 shadow-xl p-6 sm:p-8 print:shadow-none print:border-0 print:p-0 print-container">
+            <div className="max-w-3xl mx-auto bg-card border border-border shadow-xl p-6 sm:p-8 print:shadow-none print:border-0 print:p-0 print-container">
                 {/* Header */}
-                <div className="flex justify-between items-start border-b-2 border-zinc-900 pb-4 mb-6">
+                <div className="flex justify-between items-start border-b-2 border-foreground pb-4 mb-6">
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 bg-black flex items-center justify-center">
-                                <span className="text-white font-black text-lg italic">A</span>
+                            <div className="h-8 w-8 bg-primary flex items-center justify-center">
+                                <span className="text-primary-foreground font-black text-lg italic">{firstName[0]}</span>
                             </div>
                             <span className="text-xl font-black uppercase tracking-tighter">
-                                Abrar <span className="text-orange-600">Shop</span>
+                                {firstName} <span className="text-orange-600">{restNameStr}</span>
                             </span>
                         </div>
-                        <div className="text-[9px] uppercase font-bold text-zinc-500 leading-tight tracking-widest">
-                            <p>Dhaka, Bangladesh • www.gadgetdoptor.com</p>
+                        <div className="text-[9px] uppercase font-bold text-muted-foreground leading-tight tracking-widest">
+                            <p>{settings.contactAddress}</p>
                         </div>
                     </div>
 
                     <div className="text-right">
-                        <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-200 leading-none mb-1">INVOICE</h2>
-                        <p className="text-[11px] font-bold uppercase tracking-widest leading-none"><span className="text-zinc-400">#</span>{order.orderNumber}</p>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mt-1">
+                        <h2 className="text-2xl font-black uppercase tracking-tighter text-muted-foreground/50 leading-none mb-1">INVOICE</h2>
+                        <p className="text-[11px] font-bold uppercase tracking-widest leading-none"><span className="text-muted-foreground">#</span>{order.orderNumber}</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">
                             {format(new Date(order.createdAt), "MMM d, yyyy")}
                         </p>
                     </div>
@@ -135,24 +139,24 @@ export default function InvoicePage({ params: paramsPromise }: { params: Promise
                 {/* Details Grid */}
                 <div className="grid grid-cols-2 gap-8 mb-6">
                     <div className="space-y-2">
-                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 pb-1">Bill To:</h3>
+                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-1">Bill To:</h3>
                         <div className="space-y-0.5 text-xs">
                             <p className="font-black uppercase text-sm">{order.firstName} {order.lastName}</p>
-                            <p className="text-zinc-600 leading-snug">{order.address}</p>
-                            <p className="font-bold uppercase text-zinc-800">{order.district}</p>
-                            <p className="text-zinc-500 font-bold text-[10px] pt-1 uppercase tracking-widest">
+                            <p className="text-muted-foreground leading-snug">{order.address}</p>
+                            <p className="font-bold uppercase text-foreground">{order.district}</p>
+                            <p className="text-muted-foreground font-bold text-[10px] pt-1 uppercase tracking-widest">
                                 {order.mobile}
                             </p>
                         </div>
                     </div>
                     <div className="text-right space-y-2">
-                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 pb-1 text-right">Shipment:</h3>
+                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-1 text-right">Shipment:</h3>
                         <div className="space-y-0.5 text-xs">
-                            <p className="font-bold uppercase"><span className="text-zinc-400">Paid Via:</span> {order.paymentMethod === 'cod' ? 'COD' : 'Online'}</p>
+                            <p className="font-bold uppercase"><span className="text-muted-foreground">Paid Via:</span> {order.paymentMethod === 'cod' ? 'COD' : 'Online'}</p>
                             <p className="font-black uppercase text-orange-600 text-[10px] tracking-widest">
-                                <span className="text-zinc-400">Status:</span> {order.paymentStatus}
+                                <span className="text-muted-foreground">Status:</span> {order.paymentStatus}
                             </p>
-                            <p className="text-zinc-400 text-[9px] uppercase tracking-widest pt-1">Standard Delivery</p>
+                            <p className="text-muted-foreground text-[9px] uppercase tracking-widest pt-1">Standard Delivery</p>
                         </div>
                     </div>
                 </div>
@@ -161,14 +165,14 @@ export default function InvoicePage({ params: paramsPromise }: { params: Promise
                 <div className="mb-6">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="border-b border-zinc-900/10">
+                            <tr className="border-b border-foreground/10">
                                 <th className="py-2 text-[9px] font-black uppercase tracking-widest">Description</th>
                                 <th className="py-2 text-[9px] font-black uppercase tracking-widest text-center w-16">Qty</th>
                                 <th className="py-2 text-[9px] font-black uppercase tracking-widest text-right w-24">Price</th>
                                 <th className="py-2 text-[9px] font-black uppercase tracking-widest text-right w-24">Total</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-50">
+                        <tbody className="divide-y divide-border">
                             {order.items.map((item: any) => (
                                 <tr key={item.id}>
                                     <td className="py-3">
@@ -184,17 +188,17 @@ export default function InvoicePage({ params: paramsPromise }: { params: Promise
                 </div>
 
                 {/* Summary */}
-                <div className="flex justify-end border-t border-zinc-900/10 pt-4">
+                <div className="flex justify-end border-t border-foreground/10 pt-4">
                     <div className="w-48 space-y-1">
-                        <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-zinc-400">
+                        <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                             <span>Subtotal</span>
                             <span>Tk {(Number(order.totalAmount) - Number(order.deliveryFee)).toFixed(0)}</span>
                         </div>
-                        <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-zinc-400">
+                        <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                             <span>Delivery</span>
                             <span>Tk {Number(order.deliveryFee).toFixed(0)}</span>
                         </div>
-                        <div className="flex justify-between pt-2 mt-1 border-t border-zinc-900">
+                        <div className="flex justify-between pt-2 mt-1 border-t border-foreground">
                             <span className="text-[10px] font-black uppercase tracking-widest italic">Total</span>
                             <span className="text-lg font-black text-orange-600 leading-none">Tk {Number(order.totalAmount).toFixed(0)}</span>
                         </div>
@@ -202,9 +206,9 @@ export default function InvoicePage({ params: paramsPromise }: { params: Promise
                 </div>
 
                 {/* Footer */}
-                <div className="mt-10 pt-4 border-t border-zinc-100 text-center">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400 italic">Thank you for choosing Gadget Doptor</p>
-                    <p className="text-[7px] font-bold uppercase tracking-widest text-zinc-300 mt-1">System Generated • Dhaka, Bangladesh</p>
+                <div className="mt-10 pt-4 border-t border-border text-center">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground italic">Thank you for choosing {settings.siteName}</p>
+                    <p className="text-[7px] font-bold uppercase tracking-widest text-muted-foreground mt-1">System Generated • {settings.contactAddress}</p>
                 </div>
             </div>
         </div>

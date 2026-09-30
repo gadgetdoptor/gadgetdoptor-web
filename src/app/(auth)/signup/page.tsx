@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,14 +13,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useSiteSettings } from "@/context/settings-context";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { syncUserWithNeon } from "@/lib/actions";
+import { useAuth } from "@/context/auth-context";
 
 export default function SignupPage() {
+  const settings = useSiteSettings();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,12 +32,17 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { refreshProfile } = useAuth();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
 
       const displayName = `${firstName} ${lastName}`;
@@ -47,6 +56,7 @@ export default function SignupPage() {
         lastName,
         phoneNumber,
       });
+      await refreshProfile();
 
       toast.success("Account created successfully!");
       router.push("/");
@@ -59,16 +69,23 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f6f7] p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-muted p-4">
       <Link href="/" className="mb-8">
-        <span className="text-3xl font-bold font-headline tracking-tighter text-black">
-          ABRAR<span className="text-orange-500">{" "}SHOP</span>
-        </span>
+        <Image
+          src={settings.siteLogo}
+          alt={settings.siteName}
+          width={220}
+          height={60}
+          priority
+          className="h-auto w-auto"
+        />
       </Link>
 
-      <Card className="w-full max-w-md border-zinc-200 rounded-none shadow-sm bg-white">
+      <Card className="w-full max-w-md border-border shadow-sm bg-card">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold font-headline">Sign Up</CardTitle>
+          <CardTitle className="text-2xl font-bold font-headline">
+            Sign Up
+          </CardTitle>
           <CardDescription>
             Enter your information to create an account
           </CardDescription>
@@ -109,7 +126,9 @@ export default function SignupPage() {
               />
             </div>
             <div className="grid gap-1">
-              <p className="text-xs text-orange-600 font-medium uppercase tracking-tight mb-2">Use this email & password for future login</p>
+              <p className="text-xs text-orange-600 font-medium uppercase tracking-tight mb-2">
+                Use this email & password for future login
+              </p>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -136,7 +155,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-black transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -152,7 +171,7 @@ export default function SignupPage() {
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
+            Already have an account?{""}
             <Link href="/login" className="underline">
               Sign in
             </Link>

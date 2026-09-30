@@ -217,6 +217,29 @@ export const admins = pgTable('admins', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+export const activityLogs = pgTable('activity_logs', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  event: varchar('event', { length: 100 }).notNull(),
+  actor: varchar('actor', { length: 100 }).notNull().default('system'),
+  status: varchar('status', { length: 20 }).notNull().default('success'), // success, pending, failed
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const deliveryLocations = pgTable('delivery_locations', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  name: varchar('name', { length: 256 }).notNull().unique(),
+  fee: numeric('fee', { precision: 10, scale: 2 }).notNull(),
+  isDefault: boolean('is_default').default(false).notNull(),
+  sortOrder: integer('sort_order').default(0).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 export const settings = pgTable('settings', {
   id: text('id')
     .primaryKey()

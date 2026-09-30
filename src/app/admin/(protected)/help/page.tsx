@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function HelpPage() {
   return (
     <div className="flex flex-col gap-6">
-        <h1 className="text-3xl font-bold tracking-tight">Help</h1>
-        <Card>
+        <h1 className="text-xl font-bold tracking-tight">Help</h1>
+        <Card className="rounded-[16px]">
             <CardHeader>
                 <CardTitle>Coming Soon</CardTitle>
             </CardHeader>

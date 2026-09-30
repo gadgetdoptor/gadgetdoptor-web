@@ -296,7 +296,7 @@ export function ProductsTable({ products, totalPages, currentPage, categories, b
 
         {/* Bulk Actions */}
         {selectedProductIds.length > 0 && (
-          <div className="flex items-center gap-3 bg-muted/50 p-2 rounded-md border">
+          <div className="flex items-center gap-3 bg-muted/50 p-2 rounded-[10px] border">
             <span className="text-sm font-medium pl-2">{selectedProductIds.length} items selected</span>
             <div className="flex items-center gap-2 ml-auto">
               <Button
@@ -322,7 +322,7 @@ export function ProductsTable({ products, totalPages, currentPage, categories, b
         )}
       </div>
       {/* === TABLE: only this section scrolls horizontally === */}
-      <div className="w-full overflow-x-auto rounded-md border">
+      <div className="w-full overflow-x-auto rounded-[16px] border">
         <Table>
 
             <TableHeader>
@@ -376,7 +376,7 @@ export function ProductsTable({ products, totalPages, currentPage, categories, b
                   <TableCell className="border">
                     <div className="flex justify-center">
                       <Link href={`/product/${product.slug}`} target="_blank" className="block">
-                        <div className="h-10 w-10 relative overflow-hidden rounded-md hover:opacity-80 transition-opacity">
+                        <div className="h-10 w-10 relative overflow-hidden rounded-[8px] hover:opacity-80 transition-opacity">
                           {product.images && product.images[0] ? (
                             <Image
                               src={product.images[0]}

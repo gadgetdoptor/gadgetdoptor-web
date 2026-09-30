@@ -19,7 +19,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
 
     return (
         <div className="flex flex-col gap-6">
-            <h1 className="text-3xl font-bold tracking-tight">Edit Product</h1>
+            <h1 className="text-xl font-bold tracking-tight">Edit product</h1>
             <ProductForm
                 product={product}
                 onSubmit={updateProductWithId}

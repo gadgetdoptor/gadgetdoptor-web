@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useSiteSettings } from "@/context/settings-context";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
@@ -19,6 +21,7 @@ import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
+  const settings = useSiteSettings();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,23 +37,32 @@ export default function LoginPage() {
       router.push("/");
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || "Failed to login. Please check your credentials.");
+      toast.error(
+        error.message || "Failed to login. Please check your credentials.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f6f7] p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-muted p-4">
       <Link href="/" className="mb-8">
-        <span className="text-3xl font-bold font-headline tracking-tighter text-black">
-          ABRAR<span className="text-orange-500">{" "}SHOP</span>
-        </span>
+        <Image
+          src={settings.siteLogo}
+          alt={settings.siteName}
+          width={220}
+          height={60}
+          priority
+          className="h-auto w-auto"
+        />
       </Link>
 
-      <Card className="w-full max-w-md border-zinc-200 rounded-none shadow-sm bg-white">
+      <Card className="w-full max-w-md border-border shadow-sm bg-card">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold font-headline">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold font-headline">
+            Login
+          </CardTitle>
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>
@@ -90,7 +102,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-black transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -106,7 +118,7 @@ export default function LoginPage() {
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{""}
             <Link href="/signup" className="underline">
               Sign up
             </Link>

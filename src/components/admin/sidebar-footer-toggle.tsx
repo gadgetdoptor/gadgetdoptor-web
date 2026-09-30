@@ -16,7 +16,7 @@ export function SidebarFooterToggle() {
                     // Actually, we can just use useSidebar's toggleSidebar
                 }}
                 className={cn(
-                    "flex items-center gap-3 px-2 py-2 w-full hover:bg-zinc-100 transition-colors group",
+                    "flex items-center gap-3 px-2 py-2 w-full hover:bg-muted transition-colors group",
                     isCollapsed ? "justify-center" : "justify-start"
                 )}
             >
@@ -27,8 +27,8 @@ export function SidebarFooterToggle() {
                     )}
                 />
                 {!isCollapsed && (
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                        Collapse <span className="text-zinc-300 ml-1">Menu</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        Collapse <span className="text-muted-foreground ml-1">Menu</span>
                     </span>
                 )}
             </button>
@@ -45,7 +45,7 @@ export function SidebarToggle() {
         <button
             onClick={toggleSidebar}
             className={cn(
-                "flex items-center w-full hover:bg-zinc-100 transition-colors h-10 px-2",
+                "flex items-center w-full hover:bg-muted transition-colors h-10 px-2",
                 isCollapsed ? "justify-center px-0" : "justify-start gap-4"
             )}
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
@@ -54,8 +54,8 @@ export function SidebarToggle() {
                 {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </div>
             {!isCollapsed && (
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 whitespace-nowrap">
-                    Collapse <span className="text-zinc-300 ml-1">Menu</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap">
+                    Collapse <span className="text-muted-foreground ml-1">Menu</span>
                 </span>
             )}
         </button>

@@ -51,64 +51,80 @@ export function ContactForm() {
   }
 
   return (
-    <div className="lg:col-span-2 bg-white border border-zinc-200 p-8 md:p-10 shadow-sm">
+    <div className="lg:col-span-2 bg-card border border-border p-8 md:p-10 shadow-sm">
       <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold uppercase tracking-widest text-zinc-500">Full Name</label>
-            <Input 
+            <label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+              Full Name
+            </label>
+            <Input
               {...form.register("name")}
-              placeholder="John Doe" 
-              className="rounded-none border-zinc-200 focus-visible:ring-orange-500" 
+              placeholder="John Doe"
+              className="border-border focus-visible:ring-orange-500"
               disabled={isPending}
             />
             {form.formState.errors.name && (
-              <p className="text-xs text-red-500 font-medium">{form.formState.errors.name.message}</p>
+              <p className="text-xs text-red-500 font-medium">
+                {form.formState.errors.name.message}
+              </p>
             )}
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-bold uppercase tracking-widest text-zinc-500">Email Address</label>
-            <Input 
+            <label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+              Email Address
+            </label>
+            <Input
               {...form.register("email")}
-              type="email" 
-              placeholder="john@example.com" 
-              className="rounded-none border-zinc-200 focus-visible:ring-orange-500" 
+              type="email"
+              placeholder="john@example.com"
+              className="border-border focus-visible:ring-orange-500"
               disabled={isPending}
             />
             {form.formState.errors.email && (
-              <p className="text-xs text-red-500 font-medium">{form.formState.errors.email.message}</p>
+              <p className="text-xs text-red-500 font-medium">
+                {form.formState.errors.email.message}
+              </p>
             )}
           </div>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-bold uppercase tracking-widest text-zinc-500">Subject</label>
-          <Input 
+          <label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+            Subject
+          </label>
+          <Input
             {...form.register("subject")}
-            placeholder="How can we help you?" 
-            className="rounded-none border-zinc-200 focus-visible:ring-orange-500" 
+            placeholder="How can we help you?"
+            className="border-border focus-visible:ring-orange-500"
             disabled={isPending}
           />
           {form.formState.errors.subject && (
-            <p className="text-xs text-red-500 font-medium">{form.formState.errors.subject.message}</p>
+            <p className="text-xs text-red-500 font-medium">
+              {form.formState.errors.subject.message}
+            </p>
           )}
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-bold uppercase tracking-widest text-zinc-500">Message</label>
-          <Textarea 
+          <label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+            Message
+          </label>
+          <Textarea
             {...form.register("message")}
-            placeholder="Type your message here..." 
-            className="rounded-none border-zinc-200 focus-visible:ring-orange-500 min-h-[150px]" 
+            placeholder="Type your message here..."
+            className="border-border focus-visible:ring-orange-500 min-h-[150px]"
             disabled={isPending}
           />
           {form.formState.errors.message && (
-            <p className="text-xs text-red-500 font-medium">{form.formState.errors.message.message}</p>
+            <p className="text-xs text-red-500 font-medium">
+              {form.formState.errors.message.message}
+            </p>
           )}
         </div>
-        <Button 
+        <Button
           type="submit"
           disabled={isPending}
-          className="w-full md:w-auto px-12 py-6 bg-black hover:bg-zinc-900 text-white rounded-none font-bold uppercase tracking-widest group"
+          className="w-full md:w-auto px-12 py-6 bg-foreground hover:bg-foreground/90 text-background font-bold uppercase tracking-widest group"
         >
           {isPending ? (
             <>

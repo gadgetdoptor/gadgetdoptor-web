@@ -194,7 +194,7 @@ export function HeroSliderForm({ slider, onSubmit, hideCard = false, onSuccess }
                                     />
                                 </div>
                             ) : (
-                                <Card>
+                                <Card className="rounded-[16px]">
                                     <CardHeader><CardTitle>Slider Details</CardTitle></CardHeader>
                                     <CardContent className="space-y-4">
                                         <FormField
@@ -256,7 +256,7 @@ export function HeroSliderForm({ slider, onSubmit, hideCard = false, onSuccess }
                                     )}
                                 />
                             ) : (
-                                <Card>
+                                <Card className="rounded-[16px]">
                                     <CardHeader><CardTitle>Slider Image</CardTitle></CardHeader>
                                     <CardContent>
                                         <FormField
@@ -326,7 +326,7 @@ export function HeroSliderForm({ slider, onSubmit, hideCard = false, onSuccess }
                                         control={form.control}
                                         name="isActive"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                            <FormItem className="flex flex-row items-center justify-between rounded-[10px] border p-4">
                                                 <FormLabel>Active</FormLabel>
                                                 <FormControl>
                                                     <Switch
@@ -340,7 +340,7 @@ export function HeroSliderForm({ slider, onSubmit, hideCard = false, onSuccess }
                                     />
                                 </div>
                             ) : (
-                                <Card>
+                                <Card className="rounded-[16px]">
                                     <CardHeader><CardTitle>Organization</CardTitle></CardHeader>
                                     <CardContent className="space-y-4">
                                         <FormField
@@ -384,7 +384,7 @@ export function HeroSliderForm({ slider, onSubmit, hideCard = false, onSuccess }
                                             control={form.control}
                                             name="isActive"
                                             render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                                <FormItem className="flex flex-row items-center justify-between rounded-[10px] border p-4">
                                                     <div className="space-y-0.5">
                                                         <FormLabel>Active</FormLabel>
                                                     </div>

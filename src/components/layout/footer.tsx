@@ -1,13 +1,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
-import { FaFacebookF, FaInstagram, FaYoutube, FaWhatsapp } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaYoutube,
+  FaWhatsapp,
+  FaTiktok,
+} from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { SITE_CONFIG, SOCIAL_LINKS, CONTACT_INFO } from "@/lib/config";
+import type { SiteSettings } from "@/lib/types";
 
-export function Footer() {
+export function Footer({ settings }: { settings: SiteSettings }) {
+  const whatsappLink = `https://wa.me/88${settings.contactWhatsapp.replace(/\D/g, "")}`;
+
   return (
     <footer className="bg-black text-zinc-300 pt-16 pb-8 border-t border-zinc-800">
       <div className="container mx-auto px-4">
@@ -16,73 +24,162 @@ export function Footer() {
           <div className="space-y-6">
             <Link href="/" className="inline-block">
               <Image
-                src="/gadgetdoptor-logo.webp"
-                alt={SITE_CONFIG.name}
+                src={settings.siteLogo}
+                alt={settings.siteName}
                 width={180}
                 height={180}
                 className="h-16 w-auto object-contain"
               />
             </Link>
             <p className="text-sm leading-relaxed text-zinc-400 max-w-xs">
-              {SITE_CONFIG.tagline}
+              {settings.siteTagline}
             </p>
             <div className="flex items-center gap-4">
-              <Link href={SOCIAL_LINKS.facebook} target="_blank" className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#1877F2] transition-all group">
-                <FaFacebookF className="h-4 w-4 text-zinc-400 group-hover:text-white" />
-              </Link>
-              <Link href={SOCIAL_LINKS.instagram} target="_blank" className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#E4405F] transition-all group">
-                <FaInstagram className="h-5 w-5 text-zinc-400 group-hover:text-white" />
-              </Link>
-              <Link href={SOCIAL_LINKS.youtube} target="_blank" className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#FF0000] transition-all group">
-                <FaYoutube className="h-5 w-5 text-zinc-400 group-hover:text-white" />
-              </Link>
-              <Link href={SOCIAL_LINKS.whatsapp} target="_blank" className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#25D366] transition-all group">
-                <FaWhatsapp className="h-5 w-5 text-zinc-400 group-hover:text-white" />
-              </Link>
+              {settings.socialFacebook && (
+                <Link
+                  href={settings.socialFacebook}
+                  target="_blank"
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#1877F2] transition-all group"
+                >
+                  <FaFacebookF className="h-4 w-4 text-zinc-400 group-hover:text-white" />
+                </Link>
+              )}
+              {settings.socialInstagram && (
+                <Link
+                  href={settings.socialInstagram}
+                  target="_blank"
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#E4405F] transition-all group"
+                >
+                  <FaInstagram className="h-5 w-5 text-zinc-400 group-hover:text-white" />
+                </Link>
+              )}
+              {settings.socialYoutube && (
+                <Link
+                  href={settings.socialYoutube}
+                  target="_blank"
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#FF0000] transition-all group"
+                >
+                  <FaYoutube className="h-5 w-5 text-zinc-400 group-hover:text-white" />
+                </Link>
+              )}
+              {settings.socialTiktok && (
+                <Link
+                  href={settings.socialTiktok}
+                  target="_blank"
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-black transition-all group"
+                >
+                  <FaTiktok className="h-4 w-4 text-zinc-400 group-hover:text-white" />
+                </Link>
+              )}
+              {settings.contactWhatsapp && (
+                <Link
+                  href={whatsappLink}
+                  target="_blank"
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-zinc-900 hover:bg-[#25D366] transition-all group"
+                >
+                  <FaWhatsapp className="h-5 w-5 text-zinc-400 group-hover:text-white" />
+                </Link>
+              )}
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-6">
-            <h4 className="text-white font-bold uppercase tracking-widest text-xs">Quick Links</h4>
+            <h4 className="text-white font-bold uppercase tracking-widest text-xs">
+              Quick Links
+            </h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/product" className="hover:text-orange-500 transition-colors">All Products</Link></li>
-              <li><Link href="/brand" className="hover:text-orange-500 transition-colors">Shop by Brands</Link></li>
-              <li><Link href="/category" className="hover:text-orange-500 transition-colors">Shop by Categories</Link></li>
-              <li><Link href="/contact" className="hover:text-orange-500 transition-colors">Contact Us</Link></li>
-              <li><Link href="/about" className="hover:text-orange-500 transition-colors">About Us</Link></li>
+              <li>
+                <Link
+                  href="/product"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  All Products
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/brand"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Shop by Brands
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/category"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Shop by Categories
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/about"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  About Us
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Contact Information */}
           <div className="space-y-6">
-            <h4 className="text-white font-bold uppercase tracking-widest text-xs">Contact Info</h4>
+            <h4 className="text-white font-bold uppercase tracking-widest text-xs">
+              Contact Info
+            </h4>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-orange-500 shrink-0" />
-                <span className="text-zinc-400">{CONTACT_INFO.address}</span>
+                <span className="text-zinc-400">{settings.contactAddress}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-orange-500 shrink-0" />
-                <a href={`tel:${CONTACT_INFO.phone}`} className="text-zinc-400 hover:text-white transition-colors">{CONTACT_INFO.phone}</a>
+                <a
+                  href={`tel:${settings.contactPhone}`}
+                  className="text-zinc-400 hover:text-white transition-colors"
+                >
+                  {settings.contactPhone}
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-orange-500 shrink-0" />
-                <a href={`mailto:${CONTACT_INFO.email}`} className="text-zinc-400 hover:text-white transition-colors">{CONTACT_INFO.email}</a>
+                <a
+                  href={`mailto:${settings.contactEmail}`}
+                  className="text-zinc-400 hover:text-white transition-colors"
+                >
+                  {settings.contactEmail}
+                </a>
               </li>
             </ul>
           </div>
 
           {/* Newsletter */}
           <div className="space-y-6">
-            <h4 className="text-white font-bold uppercase tracking-widest text-xs">Newsletter</h4>
-            <p className="text-sm text-zinc-400">Subscribe to get special offers and once-in-a-lifetime deals.</p>
+            <h4 className="text-white font-bold uppercase tracking-widest text-xs">
+              Newsletter
+            </h4>
+            <p className="text-sm text-zinc-400">
+              Subscribe to get special offers and once-in-a-lifetime deals.
+            </p>
             <div className="flex gap-2">
               <Input
                 placeholder="Email address"
-                className="bg-zinc-900 border-zinc-800 text-white rounded-none focus-visible:ring-orange-500"
+                className="bg-zinc-900 border-zinc-800 text-white focus-visible:ring-orange-500"
               />
-              <Button size="icon" className="bg-orange-600 hover:bg-orange-700 rounded-none shrink-0">
+              <Button
+                size="icon"
+                className="bg-orange-600 hover:bg-orange-700 shrink-0"
+              >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
@@ -92,15 +189,29 @@ export function Footer() {
         <Separator className="bg-zinc-800 mb-8" />
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>&copy; {new Date().getFullYear()} {SITE_CONFIG.name.toUpperCase()}. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} {settings.siteName.toUpperCase()}.
+            All rights reserved.
+          </p>
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-2">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link>
-            <Link href="/refund-policy" className="hover:text-white transition-colors">Refund Policy</Link>
+            <Link
+              href="/privacy"
+              className="hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-white transition-colors">
+              Terms & Conditions
+            </Link>
+            <Link
+              href="/refund-policy"
+              className="hover:text-white transition-colors"
+            >
+              Refund Policy
+            </Link>
           </div>
         </div>
       </div>
     </footer>
   );
 }
-

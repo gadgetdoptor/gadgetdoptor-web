@@ -10,7 +10,7 @@ export default async function NewProductPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <h1 className="text-3xl font-bold tracking-tight">New Product</h1>
+            <h1 className="text-xl font-bold tracking-tight">New product</h1>
             <ProductForm 
                 onSubmit={createProduct}
                 brands={brands}

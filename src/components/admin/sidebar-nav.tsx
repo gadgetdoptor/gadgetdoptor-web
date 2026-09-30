@@ -117,8 +117,8 @@ export function SidebarNav() {
                     {item.icon && <item.icon className="h-4 w-4" />}
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent side="right" align="start" className="w-56 rounded-none border-zinc-200 ml-1">
-                  <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{item.label}</DropdownMenuLabel>
+                <DropdownMenuContent side="right" align="start" className="w-56 rounded-[10px] border-border ml-1">
+                  <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{item.label}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {item.items.map((subItem: any) => (
                     <DropdownMenuItem key={subItem.href} asChild>
@@ -127,7 +127,7 @@ export function SidebarNav() {
                         onClick={handleLinkClick}
                         className={cn(
                           "cursor-pointer text-xs font-bold uppercase tracking-tight",
-                          pathname === subItem.href ? "bg-zinc-100 text-black" : "text-zinc-600"
+                          pathname === subItem.href ? "bg-muted text-foreground" : "text-muted-foreground"
                         )}
                       >
                         {subItem.label}

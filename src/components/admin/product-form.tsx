@@ -381,7 +381,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                 <form onSubmit={form.handleSubmit(handleAction)} className="space-y-8">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-8">
-                            <Card>
+                            <Card className="rounded-[16px]">
                                 <CardHeader><CardTitle>Product Details</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
                                     <FormField
@@ -403,7 +403,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                                         <button
                                                             type="button"
                                                             onClick={() => form.setValue("name", "")}
-                                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-md hover:bg-muted opacity-0 group-hover/field:opacity-100 transition-opacity"
+                                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-[6px] hover:bg-muted opacity-0 group-hover/field:opacity-100 transition-opacity"
                                                         >
                                                             <X className="h-4 w-4" />
                                                         </button>
@@ -432,7 +432,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                     />
                                 </CardContent>
                             </Card>
-                            <Card>
+                            <Card className="rounded-[16px]">
                                 <CardHeader><CardTitle>Pricing </CardTitle></CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-2 gap-4">
@@ -485,7 +485,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card>
+                            <Card className="rounded-[16px]">
                                 <CardHeader><CardTitle>Inventory</CardTitle></CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-2 gap-4">
@@ -536,7 +536,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card>
+                            <Card className="rounded-[16px]">
                                 <CardHeader><CardTitle>Images</CardTitle></CardHeader>
                                 <CardContent>
                                     <FormField
@@ -559,7 +559,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                             </Card>
                         </div>
                         <div className="space-y-8">
-                            <Card>
+                            <Card className="rounded-[16px]">
                                 <CardHeader><CardTitle>Organization</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
                                     <FormField
@@ -597,7 +597,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                                                     e.stopPropagation();
                                                                     form.setValue("categoryId", "");
                                                                 }}
-                                                                className="absolute right-9 top-1/2 -translate-y-1/2 z-10 text-muted-foreground hover:text-foreground p-0.5 rounded-md hover:bg-muted opacity-0 group-hover/select:opacity-100 transition-opacity"
+                                                                className="absolute right-9 top-1/2 -translate-y-1/2 z-10 text-muted-foreground hover:text-foreground p-0.5 rounded-[6px] hover:bg-muted opacity-0 group-hover/select:opacity-100 transition-opacity"
                                                             >
                                                                 <X className="h-3 w-3" />
                                                             </button>
@@ -665,7 +665,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                                                     e.stopPropagation();
                                                                     form.setValue("brandId", "");
                                                                 }}
-                                                                className="absolute right-9 top-1/2 -translate-y-1/2 z-10 text-muted-foreground hover:text-foreground p-0.5 rounded-md hover:bg-muted opacity-0 group-hover/select:opacity-100 transition-opacity"
+                                                                className="absolute right-9 top-1/2 -translate-y-1/2 z-10 text-muted-foreground hover:text-foreground p-0.5 rounded-[6px] hover:bg-muted opacity-0 group-hover/select:opacity-100 transition-opacity"
                                                             >
                                                                 <X className="h-3 w-3" />
                                                             </button>
@@ -731,14 +731,14 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                     />
                                 </CardContent>
                             </Card>
-                            <Card>
+                            <Card className="rounded-[16px]">
                                 <CardHeader><CardTitle>Status</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
                                     <FormField
                                         control={form.control}
                                         name="isFeatured"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                            <FormItem className="flex flex-row items-center justify-between rounded-[10px] border p-4">
                                                 <div className="space-y-0.5">
                                                     <FormLabel>Featured Product</FormLabel>
                                                 </div>
@@ -756,7 +756,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                         control={form.control}
                                         name="isTrending"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                            <FormItem className="flex flex-row items-center justify-between rounded-[10px] border p-4">
                                                 <div className="space-y-0.5">
                                                     <FormLabel>New Trend</FormLabel>
                                                 </div>
@@ -774,7 +774,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                         control={form.control}
                                         name="isBestSelling"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                            <FormItem className="flex flex-row items-center justify-between rounded-[10px] border p-4">
                                                 <div className="space-y-0.5">
                                                     <FormLabel>Best Seller</FormLabel>
                                                 </div>
@@ -790,7 +790,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                     />
                                 </CardContent>
                             </Card>
-                            <Card>
+                            <Card className="rounded-[16px]">
                                 <CardHeader><CardTitle>Publish Status</CardTitle></CardHeader>
                                 <CardContent>
                                     <FormField

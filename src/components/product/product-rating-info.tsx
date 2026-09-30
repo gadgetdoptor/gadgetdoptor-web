@@ -29,12 +29,12 @@ export function ProductRatingInfo({ averageRating, reviewCount }: ProductRatingI
                             "w-3.5 h-3.5",
                             s <= Math.round(Number(averageRating))
                                 ? "fill-orange-500 text-orange-500"
-                                : "text-zinc-300"
+                                : "text-muted-foreground/40"
                         )}
                     />
                 ))}
             </div>
-            <span className="text-xs font-bold text-zinc-600">({reviewCount} Reviews)</span>
+            <span className="text-xs font-bold text-muted-foreground">({reviewCount} Reviews)</span>
         </button>
     );
 }

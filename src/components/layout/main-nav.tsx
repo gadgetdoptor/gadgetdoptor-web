@@ -15,48 +15,48 @@ export function MainNav({ categories }: MainNavProps) {
         categories.filter(cat => cat.parentId === parentId);
 
     return (
-        <div className="w-full bg-transparent border-b border-zinc-100 hidden min-[1200px]:block">
+        <div className="w-full bg-transparent border-b border-border hidden min-[1200px]:block">
             <div className="container">
                 <nav className="flex items-center gap-1">
                     {/* Home */}
-                    <Link href="/" className="h-10 pr-4 flex items-center text-xs font-bold uppercase tracking-widest text-black/80 hover:text-orange-600 transition-colors">
+                    <Link href="/" className="h-10 pr-4 flex items-center text-xs font-bold uppercase tracking-widest text-foreground/80 hover:text-orange-600 transition-colors">
                         Home
                     </Link>
 
                     {/* Mega Menu Trigger */}
                     <div className="group relative">
-                        <button className="h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-black/80 hover:text-orange-600 transition-colors">
+                        <button className="h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/80 hover:text-orange-600 transition-colors">
                             Products
                             <ChevronDown className="h-3 w-3" />
                         </button>
 
                         {/* Mega Menu Dropdown */}
-                        <div className="absolute top-full left-0 w-[250px] bg-white/95 backdrop-blur-xl border border-zinc-200 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-1">
+                        <div className="absolute top-full left-0 w-[250px] bg-background/95 backdrop-blur-xl border border-border shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-1">
                             <div className="p-6 grid grid-cols-1 gap-x-8 gap-y-4">
                                 <div>
-                                    <h3 className="text-xs font-bold uppercase mb-4 text-zinc-400 tracking-wider">Collections</h3>
+                                    <h3 className="text-xs font-bold uppercase mb-4 text-muted-foreground tracking-wider">Collections</h3>
                                     <div className="space-y-2">
-                                        <Link href="/product?isTrending=true" className="block text-sm font-medium text-zinc-600 hover:text-orange-600 hover:pl-2 transition-all">
+                                        <Link href="/product?isTrending=true" className="block text-sm font-medium text-muted-foreground hover:text-orange-600 hover:pl-2 transition-all">
                                             Trending Now
                                         </Link>
-                                        <Link href="/product?isBestSelling=true" className="block text-sm font-medium text-zinc-600 hover:text-orange-600 hover:pl-2 transition-all">
+                                        <Link href="/product?isBestSelling=true" className="block text-sm font-medium text-muted-foreground hover:text-orange-600 hover:pl-2 transition-all">
                                             Best Sellers
                                         </Link>
-                                        <Link href="/product?isFeatured=true" className="block text-sm font-medium text-zinc-600 hover:text-orange-600 hover:pl-2 transition-all">
+                                        <Link href="/product?isFeatured=true" className="block text-sm font-medium text-muted-foreground hover:text-orange-600 hover:pl-2 transition-all">
                                             Featured Items
                                         </Link>
                                         {/* add all category and brand */}
-                                        <Link href="/category" className="block text-sm font-medium text-zinc-600 hover:text-orange-600 hover:pl-2 transition-all">
+                                        <Link href="/category" className="block text-sm font-medium text-muted-foreground hover:text-orange-600 hover:pl-2 transition-all">
                                             All Categories
                                         </Link>
-                                        <Link href="/brand" className="block text-sm font-medium text-zinc-600 hover:text-orange-600 hover:pl-2 transition-all">
+                                        <Link href="/brand" className="block text-sm font-medium text-muted-foreground hover:text-orange-600 hover:pl-2 transition-all">
                                             All Brands
                                         </Link>
 
 
 
-                                        <div className="pt-4 mt-4 border-t border-zinc-100">
-                                            <Link href="/product" className="block text-sm font-bold text-black uppercase tracking-wide hover:text-orange-600 transition-colors">
+                                        <div className="pt-4 mt-4 border-t border-border">
+                                            <Link href="/product" className="block text-sm font-bold text-foreground uppercase tracking-wide hover:text-orange-600 transition-colors">
                                                 View All Products →
                                             </Link>
                                         </div>
@@ -79,7 +79,7 @@ export function MainNav({ categories }: MainNavProps) {
                             <div key={category.id} className="group relative">
                                 <Link
                                     href={`/category/${category.slug}`}
-                                    className="h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-black/80 hover:text-orange-600 transition-colors"
+                                    className="h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/80 hover:text-orange-600 transition-colors"
                                 >
                                     {category.name}
                                     {hasSubcategories && <ChevronDown className="h-3 w-3" />}
@@ -87,9 +87,9 @@ export function MainNav({ categories }: MainNavProps) {
 
                                 {/* Subcategory Mega Menu */}
                                 {hasSubcategories && (
-                                    <div className={`absolute top-full left-0 ${menuWidth} bg-white/95 backdrop-blur-xl border border-zinc-200 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-1`}>
+                                    <div className={`absolute top-full left-0 ${menuWidth} bg-background/95 backdrop-blur-xl border border-border shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-1`}>
                                         <div className="p-6">
-                                            <h3 className="text-xs font-bold uppercase mb-4 text-zinc-400 tracking-wider">
+                                            <h3 className="text-xs font-bold uppercase mb-4 text-muted-foreground tracking-wider">
                                                 {category.name} Categories
                                             </h3>
                                             <div className={`grid gap-x-8 gap-y-3 ${gridCols === 3 ? 'grid-cols-3' :
@@ -100,16 +100,16 @@ export function MainNav({ categories }: MainNavProps) {
                                                     <Link
                                                         key={subcat.id}
                                                         href={`/category/${subcat.slug}`}
-                                                        className="block text-sm font-medium text-zinc-600 hover:text-orange-600 hover:pl-2 transition-all"
+                                                        className="block text-sm font-medium text-muted-foreground hover:text-orange-600 hover:pl-2 transition-all"
                                                     >
                                                         {subcat.name}
                                                     </Link>
                                                 ))}
                                             </div>
-                                            <div className="pt-4 mt-4 border-t border-zinc-100">
+                                            <div className="pt-4 mt-4 border-t border-border">
                                                 <Link
                                                     href={`/category/${category.slug}`}
-                                                    className="block text-sm font-bold text-black uppercase tracking-wide hover:text-orange-600 transition-colors"
+                                                    className="block text-sm font-bold text-foreground uppercase tracking-wide hover:text-orange-600 transition-colors"
                                                 >
                                                     View All {category.name} →
                                                 </Link>
