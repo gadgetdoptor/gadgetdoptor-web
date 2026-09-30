@@ -18,8 +18,9 @@ export default async function MainLayout({
     <SettingsProvider settings={settings}>
       <div className="relative flex min-h-screen flex-col">
         <Header categories={categories} />
-        <main className="flex-1 pb-16 min-[1200px]:pb-0">{children}</main>
+        <main className="flex-1">{children}</main>
         <Footer settings={settings} />
+        <div className="h-16 min-[1200px]:hidden" aria-hidden="true" />
         <BottomNav categories={categories} />
       </div>
     </SettingsProvider>

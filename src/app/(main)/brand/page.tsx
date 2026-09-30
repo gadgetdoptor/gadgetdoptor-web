@@ -63,7 +63,7 @@ export default async function BrandsPage() {
                                                     src={brand.imageUrl}
                                                     alt={brand.name}
                                                     fill
-                                                    className="object-contain transition-transform duration-300 group-hover:scale-110"
+                                                    className="object-contain dark:invert transition-transform duration-300 group-hover:scale-110"
                                                     sizes="(min-width: 1280px) 120px, 100px"
                                                 />
                                             ) : (

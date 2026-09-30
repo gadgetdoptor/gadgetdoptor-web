@@ -56,7 +56,7 @@ export function MobileNav({ categories, variant = "header" }: MobileNavProps) {
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] p-0 border-l-border">
+      <SheetContent side="right" className="w-[280px] p-0 gap-0 border-l-border">
         <SheetHeader className="h-12 px-4 py-0 border-b border-border flex-row items-center">
           <SheetTitle asChild>
             <NextImage

@@ -32,7 +32,7 @@ export async function FeaturedCategories() {
           </div>
         </FadeUp>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-6 gap-x-4 sm:gap-x-6 mt-12">
+        <div className="flex flex-wrap justify-center gap-y-6 gap-x-4 sm:gap-x-6 mt-12">
           {featuredCategories.map((category, index) => {
             const imageUrl = category.imageUrl || "";
 
@@ -40,7 +40,7 @@ export async function FeaturedCategories() {
               <FadeUp key={category.id} delay={index * 0.1}>
                 <Link
                   href={`/category/${category.slug}`}
-                  className="group flex flex-col items-center w-full max-w-32 sm:max-w-36 md:max-w-40 transition-all duration-300"
+                  className="group flex flex-col items-center w-32 sm:w-36 md:w-40 transition-all duration-300"
                 >
                   <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-muted/40 flex flex-col shadow-sm group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-500">
                     <div className="relative flex-1 w-full">

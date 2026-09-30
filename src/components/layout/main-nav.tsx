@@ -15,17 +15,17 @@ export function MainNav({ categories }: MainNavProps) {
         categories.filter(cat => cat.parentId === parentId);
 
     return (
-        <div className="w-full bg-transparent border-b border-border hidden min-[1200px]:block">
+        <div className="w-full bg-black border-b border-border hidden min-[1200px]:block">
             <div className="container">
                 <nav className="flex items-center gap-1">
                     {/* Home */}
-                    <Link href="/" className="h-10 pr-4 flex items-center text-xs font-bold uppercase tracking-widest text-foreground/80 hover:text-orange-600 transition-colors">
+                    <Link href="/" className="h-10 pr-4 flex items-center text-xs font-bold capitalize text-white/80 hover:text-orange-500 transition-colors">
                         Home
                     </Link>
 
                     {/* Mega Menu Trigger */}
                     <div className="group relative">
-                        <button className="h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/80 hover:text-orange-600 transition-colors">
+                        <button className="h-10 px-4 flex items-center gap-1 text-xs font-bold capitalize text-white/80 hover:text-orange-500 transition-colors">
                             Products
                             <ChevronDown className="h-3 w-3" />
                         </button>
@@ -79,7 +79,7 @@ export function MainNav({ categories }: MainNavProps) {
                             <div key={category.id} className="group relative">
                                 <Link
                                     href={`/category/${category.slug}`}
-                                    className="h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-foreground/80 hover:text-orange-600 transition-colors"
+                                    className="h-10 px-4 flex items-center gap-1 text-xs font-bold capitalize text-white/80 hover:text-orange-500 transition-colors"
                                 >
                                     {category.name}
                                     {hasSubcategories && <ChevronDown className="h-3 w-3" />}

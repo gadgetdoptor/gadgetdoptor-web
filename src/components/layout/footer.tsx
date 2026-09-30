@@ -208,7 +208,7 @@ export function Footer({ settings }: { settings: SiteSettings }) {
               href="https://sofolit.vercel.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
+              className="font-bold hover:text-white transition-colors"
             >
               Sofol IT
             </a>

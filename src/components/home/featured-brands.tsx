@@ -42,7 +42,7 @@ export async function FeaturedBrands() {
                                                 src={brand.imageUrl}
                                                 alt={brand.name}
                                                 fill
-                                                className="object-contain"
+                                                className="object-contain dark:invert"
                                                 sizes="(max-width: 640px) 110px, 90px"
                                             />
                                         ) : (

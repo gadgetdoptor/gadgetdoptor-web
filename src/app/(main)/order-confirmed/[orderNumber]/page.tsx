@@ -29,14 +29,17 @@ export default async function OrderConfirmedPage({ params }: Props) {
   const { orderNumber } = await params;
 
   return (
-    <div className="container py-12 md:py-20">
-      <div className="mb-12">
+    <div className="container mx-auto pt-4 pb-20 px-4">
+      <div className="mb-6">
         <Breadcrumb
           items={[
             { name: "Home", href: "/" },
             { name: "Order Confirmed", href: "#" },
           ]}
         />
+        <h1 className="mt-4 text-2xl font-bold tracking-tight font-headline uppercase">
+          Order Confirmed
+        </h1>
       </div>
 
       <div className="flex flex-col items-center justify-center">
