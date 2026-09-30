@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { after } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import { products, brands, categories, heroSliders, users, orders, orderItems, reviews, coupons, admins, settings, activityLogs, deliveryLocations } from '@/lib/schema';
@@ -766,7 +767,7 @@ export async function processCheckout(
     const deliveryFee = String(await getDeliveryFeeForLocation(validatedFields.data.deliveryMethod));
 
     // Wrap the entire checkout process in a transaction
-    const result: { success: true; url: string } = await db.transaction(async (tx) => {
+    const result: { success: true; url: string; orderId: string; productDetails: string[] } = await db.transaction(async (tx) => {
       // 1. Verify Stock Availability for ALL items first
       const itemsWithNames: { id: string, name: string }[] = [];
       for (const item of items) {
@@ -839,25 +840,29 @@ export async function processCheckout(
         await tx.insert(orderItems).values(orderItemsValues);
       }
 
-      // 5. Send Telegram Notification (Background)
-      // We don't await this to avoid delaying the user's redirect
       const productDetails = items.map(item => {
         const p = itemsWithNames.find(i => i.id === item.id);
         return `${p?.name || 'Product'} (x${item.quantity})`;
       });
 
+      return { success: true, url: `/order-confirmed/${orderNumber}`, orderId, productDetails };
+    });
+
+    // 5. Send Telegram Notification (Background)
+    // Scheduled with `after` so it's guaranteed to run to completion even
+    // after the response is sent, instead of being an un-awaited promise
+    // that a suspended serverless function can cut off mid-flight.
+    after(() =>
       sendTelegramNotification({
         orderNumber,
         customerName: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
         phone: validatedFields.data.mobile,
-        items: productDetails,
+        items: result.productDetails,
         totalAmount: String(totalAmount),
         address: `${validatedFields.data.address}, ${validatedFields.data.district}`,
-        orderId: orderId,
-      }).catch(err => console.error('Telegram notification error:', err));
-
-      return { success: true, url: `/order-confirmed/${orderNumber}` };
-    });
+        orderId: result.orderId,
+      }).catch(err => console.error('Telegram notification error:', err))
+    );
 
     await logActivity({
       event: 'ORDER_CREATE',

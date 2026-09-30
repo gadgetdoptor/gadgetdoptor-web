@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import {
   FaFacebookF,
   FaInstagram,
@@ -8,8 +8,6 @@ import {
   FaWhatsapp,
   FaTiktok,
 } from "react-icons/fa";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { SiteSettings } from "@/lib/types";
 
@@ -28,7 +26,7 @@ export function Footer({ settings }: { settings: SiteSettings }) {
                 alt={settings.siteName}
                 width={180}
                 height={180}
-                className="h-16 w-auto object-contain"
+                className="h-10 w-auto object-contain"
               />
             </Link>
             <p className="text-sm leading-relaxed text-zinc-400 max-w-xs">
@@ -163,26 +161,37 @@ export function Footer({ settings }: { settings: SiteSettings }) {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Legal */}
           <div className="space-y-6">
             <h4 className="text-white font-bold uppercase tracking-widest text-xs">
-              Newsletter
+              Legal
             </h4>
-            <p className="text-sm text-zinc-400">
-              Subscribe to get special offers and once-in-a-lifetime deals.
-            </p>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Email address"
-                className="bg-zinc-900 border-zinc-800 text-white focus-visible:ring-orange-500"
-              />
-              <Button
-                size="icon"
-                className="bg-orange-600 hover:bg-orange-700 shrink-0"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <Link
+                  href="/privacy"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/refund-policy"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Refund Policy
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -193,23 +202,17 @@ export function Footer({ settings }: { settings: SiteSettings }) {
             &copy; {new Date().getFullYear()} {settings.siteName.toUpperCase()}.
             All rights reserved.
           </p>
-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-2">
-            <Link
-              href="/privacy"
+          <p>
+            Powered by{" "}
+            <a
+              href="https://sofolit.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Terms & Conditions
-            </Link>
-            <Link
-              href="/refund-policy"
-              className="hover:text-white transition-colors"
-            >
-              Refund Policy
-            </Link>
-          </div>
+              Sofol IT
+            </a>
+          </p>
         </div>
       </div>
     </footer>

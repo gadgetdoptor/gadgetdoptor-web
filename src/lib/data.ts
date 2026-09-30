@@ -1,5 +1,5 @@
 import type { Product, Brand, Category, HeroSlider, Review, SiteSettings } from '@/lib/types';
-import { db } from '@/lib/db';
+import { dbRead as db } from '@/lib/db';
 import { products as productsTable, categories as categoriesTable, brands as brandsTable, heroSliders as heroSlidersTable, reviews as reviewsTable } from '@/lib/schema';
 import { eq, desc, asc, isNull, sql, or, ilike, and, ne, count as drizzleCount } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';

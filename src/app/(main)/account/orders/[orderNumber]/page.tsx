@@ -74,7 +74,7 @@ export default function OrderDetailsPage({
         </p>
         <Link
           href="/account/orders"
-          className="bg-primary text-primary-foreground px-8 py-4 font-bold uppercase tracking-widest text-xs"
+          className="rounded-lg bg-primary text-primary-foreground px-8 py-4 font-bold uppercase tracking-widest text-xs"
         >
           Back to Orders
         </Link>
@@ -98,11 +98,11 @@ export default function OrderDetailsPage({
           <div className="flex items-center gap-4">
             <Link
               href="/account/orders"
-              className="h-10 w-10 border border-border flex items-center justify-center hover:bg-muted transition-colors"
+              className="h-10 w-10 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <h1 className="text-2xl md:text-3xl font-black font-headline uppercase tracking-tight">
+            <h1 className="text-xl md:text-2xl font-black font-headline uppercase tracking-tighter leading-none">
               Order{" "}
               <span className="text-orange-600">#{params.orderNumber}</span>
             </h1>
@@ -113,7 +113,7 @@ export default function OrderDetailsPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           {/* Order Items */}
-          <div className="border border-border bg-card overflow-hidden">
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
             <div className="p-6 border-b border-border bg-muted/50">
               <h2 className="text-xs font-black uppercase tracking-[0.2em]">
                 Order Items / <span className="text-orange-600">Summary</span>
@@ -122,7 +122,7 @@ export default function OrderDetailsPage({
             <div className="divide-y divide-border">
               {order?.items?.map((item: any) => (
                 <div key={item.id} className="p-6 flex gap-6 items-center">
-                  <div className="h-16 w-16 bg-muted border border-border relative shrink-0 overflow-hidden">
+                  <div className="h-16 w-16 rounded-lg bg-muted border border-border relative shrink-0 overflow-hidden">
                     {item.product?.images?.[0] ? (
                       <Image
                         src={item.product.images[0]}
@@ -182,7 +182,7 @@ export default function OrderDetailsPage({
           {/* Information Grid Container */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Customer Info */}
-            <div className="border border-border bg-card">
+            <div className="rounded-lg border border-border bg-card overflow-hidden">
               <div className="p-4 border-b border-border bg-muted/50">
                 <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">
                   Shipping Details
@@ -190,7 +190,7 @@ export default function OrderDetailsPage({
               </div>
               <div className="p-4 space-y-4">
                 <div className="flex gap-4">
-                  <div className="h-8 w-8 bg-muted flex items-center justify-center border border-border shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center border border-border shrink-0">
                     <MapPin className="h-3 w-3 text-muted-foreground" />
                   </div>
                   <div>
@@ -209,7 +209,7 @@ export default function OrderDetailsPage({
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="h-8 w-8 bg-muted flex items-center justify-center border border-border shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center border border-border shrink-0">
                     <Phone className="h-3 w-3 text-muted-foreground" />
                   </div>
                   <div>
@@ -223,7 +223,7 @@ export default function OrderDetailsPage({
             </div>
 
             {/* Payment Info */}
-            <div className="border border-border bg-card">
+            <div className="rounded-lg border border-border bg-card overflow-hidden">
               <div className="p-4 border-b border-border bg-muted/50">
                 <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">
                   Payment Overview
@@ -231,7 +231,7 @@ export default function OrderDetailsPage({
               </div>
               <div className="p-4 space-y-4">
                 <div className="flex gap-4">
-                  <div className="h-8 w-8 bg-muted flex items-center justify-center border border-border shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center border border-border shrink-0">
                     <CreditCard className="h-3 w-3 text-muted-foreground" />
                   </div>
                   <div>
@@ -245,7 +245,7 @@ export default function OrderDetailsPage({
                     </p>
                     <span
                       className={cn(
-                        "inline-block mt-2 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest",
+                        "inline-block mt-2 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
                         order?.paymentStatus === "paid"
                           ? "bg-green-100 text-green-700"
                           : "bg-yellow-100 text-yellow-700",
@@ -264,7 +264,7 @@ export default function OrderDetailsPage({
 
         {/* Sidebar - Order Tracking */}
         <div className="space-y-8">
-          <div className="border border-border bg-card">
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
             <div className="p-6 border-b border-border bg-muted/50 flex justify-between items-center">
               <h2 className="text-xs font-black uppercase tracking-[0.2em]">
                 Order <span className="text-orange-600">Journey</span>

@@ -377,33 +377,30 @@ export default async function CategoryPage({
               </h2>
               <div className="flex-1 h-px bg-border"></div>
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-3 md:gap-6">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-x-2 gap-y-6 md:gap-x-4 md:gap-y-8">
               {subcategories.map((subcat) => (
                 <Link
                   key={subcat.id}
                   href={`/category/${fullSlug}/${subcat.slug}`}
-                  className="group block"
+                  className="group flex flex-col items-center text-center gap-2"
                 >
-                  <div className="space-y-2 text-center">
-                    <div className="aspect-square relative overflow-hidden rounded-2xl bg-card border group-hover:border-orange-500 transition-all duration-500 shadow-sm">
-                      {subcat.imageUrl ? (
-                        <Image
-                          src={subcat.imageUrl}
-                          alt={subcat.name}
-                          fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center p-6 grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
-                          <ShoppingBag className="w-12 h-12" />
-                        </div>
-                      )}
-                      <div className="absolute inset-x-0 bottom-0 h-1 bg-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
-                    </div>
-                    <p className="font-medium md:font-semibold text-[10px] md:text-xs uppercase tracking-normal group-hover:text-orange-600 transition-colors">
-                      {subcat.name}
-                    </p>
+                  <div className="aspect-square w-full relative overflow-hidden rounded-full bg-muted border border-border group-hover:border-orange-500 group-active:scale-95 transition-all duration-200">
+                    {subcat.imageUrl ? (
+                      <Image
+                        src={subcat.imageUrl}
+                        alt={subcat.name}
+                        fill
+                        className="object-cover p-2"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center p-4 opacity-20">
+                        <ShoppingBag className="w-8 h-8" />
+                      </div>
+                    )}
                   </div>
+                  <p className="text-[11px] md:text-xs font-medium leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
+                    {subcat.name}
+                  </p>
                 </Link>
               ))}
             </div>

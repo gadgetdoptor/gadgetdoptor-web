@@ -19,7 +19,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Category } from "@/lib/types";
 import { TopBar } from "./top-bar";
 import { MainNav } from "./main-nav";
-import { MobileNav } from "./mobile-nav";
 
 const SearchBarFallback = () => <Skeleton className="h-10 w-full bg-muted" />;
 const DesktopSearchBarFallback = () => (
@@ -104,9 +103,8 @@ export function Header({ categories = [] }: HeaderProps) {
         <div className="container flex h-16 items-center">
           {/* Mobile Header */}
           <div className="flex w-full items-center justify-between min-[1200px]:hidden h-full py-4">
-            {/* Left side: Menu + Logo */}
+            {/* Left side: Logo */}
             <div className="flex items-center gap-2">
-              <MobileNav categories={categories} />
               <Link href="/" className="inline-block">
                 <NextImage
                   src={settings.siteLogo}
@@ -120,12 +118,12 @@ export function Header({ categories = [] }: HeaderProps) {
               </Link>
             </div>
 
-            {/* Right side: Search, Cart, Profile */}
+            {/* Right side: Search, Cart, Profile, Menu */}
             <div className="flex items-center gap-1.5">
               <Button
                 variant="ghost"
                 size="icon"
-                className="bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500"
+                className="bg-muted/50 border border-border text-foreground hover:bg-muted hover:text-orange-500"
                 onClick={() => setMobileSearchOpen((p) => !p)}
               >
                 <Search
@@ -136,11 +134,11 @@ export function Header({ categories = [] }: HeaderProps) {
                 />
                 <span className="sr-only">Toggle Search</span>
               </Button>
-              <ThemeToggle className="bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500" />
+              <ThemeToggle className="bg-muted/50 border border-border text-foreground hover:bg-muted hover:text-orange-500" />
               <Button
                 variant="ghost"
                 size="icon"
-                className="bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500"
+                className="bg-muted/50 border border-border text-foreground hover:bg-muted hover:text-orange-500"
                 asChild
               >
                 <Link
@@ -152,7 +150,7 @@ export function Header({ categories = [] }: HeaderProps) {
               </Button>
               <CartIcon
                 onClick={() => setDrawerOpen(true)}
-                className="text-foreground bg-muted/50 hover:bg-muted hover:text-orange-500"
+                className="text-foreground bg-muted/50 border border-border hover:bg-muted hover:text-orange-500"
               />
             </div>
           </div>
@@ -180,11 +178,11 @@ export function Header({ categories = [] }: HeaderProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <ThemeToggle className="h-9 bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500 shadow-sm" />
+              <ThemeToggle className="h-9 bg-muted/50 border border-border text-foreground hover:bg-muted hover:text-orange-500 shadow-sm" />
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 bg-muted/50 text-foreground hover:bg-muted hover:text-orange-500 shadow-sm"
+                className="h-9 w-9 bg-muted/50 border border-border text-foreground hover:bg-muted hover:text-orange-500 shadow-sm"
                 asChild
               >
                 <Link
@@ -197,7 +195,7 @@ export function Header({ categories = [] }: HeaderProps) {
 
               <CartIcon
                 onClick={() => setDrawerOpen(true)}
-                className="text-foreground bg-muted/50 hover:bg-muted hover:text-orange-500 shadow-sm transition-colors h-9 px-4"
+                className="text-foreground bg-muted/50 border border-border hover:bg-muted hover:text-orange-500 shadow-sm transition-colors h-9 px-4"
               />
             </div>
           </div>

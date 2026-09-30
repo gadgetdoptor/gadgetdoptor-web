@@ -25,9 +25,10 @@ import { useSiteSettings } from "@/context/settings-context";
 
 interface MobileNavProps {
   categories: Category[];
+  variant?: "header" | "bottom-nav";
 }
 
-export function MobileNav({ categories }: MobileNavProps) {
+export function MobileNav({ categories, variant = "header" }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const settings = useSiteSettings();
 
@@ -39,16 +40,23 @@ export function MobileNav({ categories }: MobileNavProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="mr-2 text-foreground bg-muted/50 hover:bg-muted hover:text-orange-500"
-        >
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle Menu</span>
-        </Button>
+        {variant === "bottom-nav" ? (
+          <button type="button" className="flex flex-col items-center justify-center">
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle Menu</span>
+          </button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-foreground bg-muted/50 border border-border hover:bg-muted hover:text-orange-500"
+          >
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle Menu</span>
+          </Button>
+        )}
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] p-0 border-r-border">
+      <SheetContent side="right" className="w-[280px] p-0 border-l-border">
         <SheetHeader className="h-12 px-4 py-0 border-b border-border flex-row items-center">
           <SheetTitle asChild>
             <NextImage
