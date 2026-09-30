@@ -139,7 +139,7 @@ async function ProductGrid({
     if (products.length === 0) {
         return (
             <div className="space-y-8">
-                <div className="flex items-center justify-between border border-zinc-200 p-2 min-[1400px]:hidden">
+                <div className="flex items-center justify-between border border-border rounded-xl p-2 min-[1400px]:hidden">
                     <MobileFilterSheet categories={categoriesData} brands={brandsData} />
                     <ProductSort />
                 </div>
@@ -153,7 +153,7 @@ async function ProductGrid({
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between gap-4 border border-zinc-200 p-4 bg-white shadow-sm">
+            <div className="flex items-center justify-between gap-4 border border-border rounded-xl p-4 bg-card shadow-sm">
                 <div className="flex items-center gap-3 w-full sm:w-auto min-[1200px]:hidden">
                     <MobileFilterSheet categories={categoriesData} brands={brandsData} />
                 </div>
@@ -167,7 +167,7 @@ async function ProductGrid({
                 Showing <span className="text-primary">{products.length}</span> of <span className="font-bold">{totalCount}</span> products
             </p>
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4 min-[1200px]:grid-cols-3 xl:grid-cols-4 lg:gap-x-6 lg:gap-y-10">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4 lg:gap-x-6 lg:gap-y-10">
                 {products.map((product, index) => (
                     <ProductCard key={product.id} product={product} priority={index < 8} />
                 ))}
@@ -212,18 +212,18 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     ]);
 
     return (
-        <div className="bg-[#fcfcfc] min-h-screen">
+        <div className="bg-background min-h-screen">
             {/* --- PREMIUM HEADER --- */}
             <div className="bg-black text-white pt-4 pb-6 md:pt-6 md:pb-8 relative overflow-hidden">
                 <div className="container relative z-10">
                     <Breadcrumb items={[{ name: 'Home', href: '/' }, { name: 'Product', href: '/product' }]} className="text-white" />
                     <div className="mt-4 flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-4">
-                            <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tighter uppercase leading-none">
+                            <h1 className="text-xl sm:text-2xl min-[1200px]:text-3xl font-black font-headline tracking-tighter uppercase leading-none">
                                 {query ? `Search results for "${query}"` : isTrending ? "Trending Products" : isBestSelling ? "Best Selling Products" : isFeatured ? "Featured Products" : "All Products"}
                             </h1>
                             <div className="h-1 w-16 md:h-1.5 md:w-24 bg-orange-500"></div>
-                            <h3 className="text-zinc-400 text-sm md:text-base font-medium">
+                            <h3 className="text-zinc-400 text-xs sm:text-sm font-medium">
                                 {query ? `Showing search results for "${query}"` : isTrending ? "Discover what's trending now. The most popular products in Bangladesh." : isBestSelling ? "Our top-selling products. Trusted by thousands of customers." : isFeatured ? "Handpicked premium products. Curated just for you." : "Explore our complete collection. Find the best products at the best prices in Bangladesh."}
                             </h3>
                         </div>
@@ -237,6 +237,24 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             <div className="container py-12">
 
                 <div className="grid grid-cols-1 min-[1200px]:grid-cols-4 gap-12">
+                    <aside className="hidden min-[1200px]:block min-[1200px]:col-span-1 self-start sticky top-24 bg-card border border-border rounded-xl space-y-8 p-4">
+                        <div>
+                            <div className="flex items-center justify-between mb-6 pb-2 border-b-2 border-foreground">
+                                <h2 className="text-lg font-black uppercase tracking-tight font-headline">Filters</h2>
+                                {categoriesFilter || brandsFilter ? (
+                                    <Button variant="link" asChild className="p-0 h-auto font-bold text-[10px] uppercase tracking-widest hover:text-orange-600">
+                                        <Link href="/product">
+                                            Reset All
+                                        </Link>
+                                    </Button>
+                                ) : null}
+                            </div>
+                            <Suspense fallback={<Skeleton className=" w-full" />}>
+                                <ProductFilters categories={categoriesData} brands={brandsData} />
+                            </Suspense>
+                        </div>
+                    </aside>
+
                     <main className="col-span-1 min-[1200px]:col-span-3">
                         <Suspense key={query + currentPage + sortBy + categoriesFilter + brandsFilter + isTrending + isBestSelling + isFeatured} fallback={<ProductListSkeleton />}>
                             <ProductGrid
@@ -253,26 +271,6 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                             />
                         </Suspense>
                     </main>
-
-                    <aside className="hidden min-[1200px]:block min-[1200px]:col-span-1 bg-card border border-zinc-200">
-                        <div className="sticky top-24 space-y-8 p-4">
-                            <div>
-                                <div className="flex items-center justify-between mb-6 pb-2 border-b-2 border-black">
-                                    <h2 className="text-lg font-black uppercase tracking-tight font-headline">Filters</h2>
-                                    {categoriesFilter || brandsFilter ? (
-                                        <Button variant="link" asChild className="p-0 h-auto font-bold text-[10px] uppercase tracking-widest hover:text-orange-600">
-                                            <Link href="/product">
-                                                Reset All
-                                            </Link>
-                                        </Button>
-                                    ) : null}
-                                </div>
-                                <Suspense fallback={<Skeleton className=" w-full" />}>
-                                    <ProductFilters categories={categoriesData} brands={brandsData} />
-                                </Suspense>
-                            </div>
-                        </div>
-                    </aside>
                 </div>
             </div>
         </div>
