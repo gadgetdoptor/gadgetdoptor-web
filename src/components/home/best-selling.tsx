@@ -1,4 +1,5 @@
 import { getProducts } from "@/lib/data";
+import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -19,15 +20,17 @@ export async function BestSelling() {
   }
 
   return (
-    <section className="py-8 md:py-14 lg:py-16 bg-background">
+    <section className="pt-8 md:pt-14 lg:pt-8 pb-8 md:pb-14 lg:pb-16 bg-background">
       <div className="container">
         <Carousel
           opts={{
             align: "start",
+            loop: true,
           }}
+          autoplay={{ delay: 3500 }}
           className="w-full"
         >
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
+          <div className="flex flex-row items-end justify-between gap-6 mb-8 md:mb-12">
             <div className="space-y-4 text-left">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-headline tracking-tight capitalize leading-none">
                 Best{" "}
@@ -36,21 +39,27 @@ export async function BestSelling() {
                 </span>
               </h2>
             </div>
-            <div className="flex gap-2 md:gap-3 hidden md:flex">
-              <CarouselPrevious className="static translate-y-0 h-10 w-10 md:h-12 md:w-12 border-border hover:bg-foreground hover:text-background transition-all" />
-              <CarouselNext className="static translate-y-0 h-10 w-10 md:h-12 md:w-12 border-border hover:bg-foreground hover:text-background transition-all" />
-            </div>
+            <Link
+              href="/product"
+              className="text-xs md:text-sm font-bold border border-border rounded-full px-4 py-2 hover:bg-foreground hover:text-background transition-colors shrink-0"
+            >
+              See All
+            </Link>
           </div>
-          <CarouselContent className="py-2">
-            {bestSellingProducts.map((product) => (
-              <CarouselItem
-                key={product.id}
-                className="basis-[48%] sm:basis-[30%] md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
-              >
-                <ProductCard product={product} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
+          <div className="relative">
+            <CarouselContent className="py-2">
+              {bestSellingProducts.map((product) => (
+                <CarouselItem
+                  key={product.id}
+                  className="basis-[48%] sm:basis-[30%] md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                >
+                  <ProductCard product={product} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="flex left-0 -translate-x-1/2 h-9 w-9 md:h-10 md:w-10 backdrop-blur-md bg-background/70 border border-border/50 shadow-lg hover:bg-orange-600 hover:text-white hover:border-orange-600 disabled:hidden transition-colors" />
+            <CarouselNext className="flex right-0 translate-x-1/2 h-9 w-9 md:h-10 md:w-10 backdrop-blur-md bg-background/70 border border-border/50 shadow-lg hover:bg-orange-600 hover:text-white hover:border-orange-600 disabled:hidden transition-colors" />
+          </div>
         </Carousel>
       </div>
     </section>

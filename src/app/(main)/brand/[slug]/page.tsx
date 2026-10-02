@@ -303,8 +303,8 @@ export default async function BrandPage({
       <div className="bg-black text-white pt-4 pb-6 md:pt-6 md:pb-8 relative overflow-hidden">
         <div className="container relative z-10">
           <Breadcrumb items={breadcrumbItems} className="text-white" />
-          <div className="mt-4 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-4">
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <div className="space-y-2 md:space-y-3 min-w-0">
               <h1 className="text-xl sm:text-2xl min-[1200px]:text-3xl font-black font-headline tracking-tighter uppercase leading-none">
                 {brand.name}
               </h1>
@@ -316,12 +316,12 @@ export default async function BrandPage({
             </div>
             {brand.imageUrl && (
               <div className="flex-shrink-0">
-                <div className="relative w-24 h-24 md:w-32 md:h-32 bg-white rounded-lg overflow-hidden">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white rounded-lg overflow-hidden">
                   <Image
                     src={brand.imageUrl}
                     alt={brand.name}
                     fill
-                    className="object-contain p-4"
+                    className="object-contain p-2.5"
                   />
                 </div>
               </div>

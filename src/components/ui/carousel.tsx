@@ -4,6 +4,7 @@ import * as React from "react";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
+import AutoplayPlugin from "embla-carousel-autoplay";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -17,6 +18,10 @@ type CarouselPlugin = UseCarouselParameters[1];
 type CarouselProps = {
   opts?: CarouselOptions;
   plugins?: CarouselPlugin;
+  // Plain, serializable config — lets Server Components opt a carousel into
+  // autoplay without passing a plugin instance (a function) across the
+  // server/client boundary, which React/Next.js rejects.
+  autoplay?: boolean | { delay?: number; stopOnInteraction?: boolean };
   orientation?: "horizontal" | "vertical";
   setApi?: (api: CarouselApi) => void;
 };
@@ -47,16 +52,26 @@ function Carousel({
   opts,
   setApi,
   plugins,
+  autoplay,
   className,
   children,
   ...props
 }: React.ComponentProps<"div"> & CarouselProps) {
+  const autoplayOpts = autoplay === true ? {} : autoplay || null;
+  const autoplayPlugin = React.useRef(
+    autoplayOpts
+      ? AutoplayPlugin({ delay: 3500, stopOnInteraction: true, ...autoplayOpts })
+      : null,
+  );
+
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
       axis: orientation === "horizontal" ? "x" : "y",
     },
-    plugins,
+    autoplayPlugin.current
+      ? [...(plugins || []), autoplayPlugin.current]
+      : plugins,
   );
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(false);
@@ -231,6 +246,52 @@ function CarouselNext({
   );
 }
 
+function CarouselDots({ className }: { className?: string }) {
+  const { api } = useCarousel();
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+
+  React.useEffect(() => {
+    if (!api) return;
+
+    setScrollSnaps(api.scrollSnapList());
+
+    const onSelect = () => setSelectedIndex(api.selectedScrollSnap());
+    onSelect();
+    api.on("select", onSelect);
+    api.on("reInit", onSelect);
+
+    return () => {
+      api.off("select", onSelect);
+      api.off("reInit", onSelect);
+    };
+  }, [api]);
+
+  if (scrollSnaps.length <= 1) return null;
+
+  return (
+    <div
+      className={cn("flex items-center justify-center gap-1.5", className)}
+      data-slot="carousel-dots"
+    >
+      {scrollSnaps.map((_, index) => (
+        <button
+          key={index}
+          type="button"
+          aria-label={`Go to slide ${index + 1}`}
+          onClick={() => api?.scrollTo(index)}
+          className={cn(
+            "h-1.5 rounded-full transition-all duration-300",
+            index === selectedIndex
+              ? "w-6 bg-foreground"
+              : "w-1.5 bg-border hover:bg-muted-foreground",
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
 export {
   type CarouselApi,
   Carousel,
@@ -238,4 +299,5 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 };

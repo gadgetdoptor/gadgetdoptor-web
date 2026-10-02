@@ -15,9 +15,9 @@ export function Footer({ settings }: { settings: SiteSettings }) {
   const whatsappLink = `https://wa.me/88${settings.contactWhatsapp.replace(/\D/g, "")}`;
 
   return (
-    <footer className="bg-black text-zinc-300 pt-16 pb-8 border-t border-zinc-800">
+    <footer className="bg-black text-zinc-300 pt-8 pb-6 border-t border-zinc-800">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           {/* Brand section */}
           <div className="space-y-6">
             <Link href="/" className="inline-block">
@@ -195,7 +195,7 @@ export function Footer({ settings }: { settings: SiteSettings }) {
           </div>
         </div>
 
-        <Separator className="bg-zinc-800 mb-8" />
+        <Separator className="bg-zinc-800 mb-6" />
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <p>

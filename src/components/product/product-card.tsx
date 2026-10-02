@@ -85,11 +85,12 @@ export function ProductCard({
       <div className="px-3 pb-3 md:px-4 md:pb-4">
         <Button
           size="sm"
-          className="w-full bg-gradient-to-r from-foreground to-muted-foreground text-background border-0  capitalize  hover:bg-none hover:bg-orange-600 hover:text-white transition-all h-9"
+          className="group relative isolate overflow-hidden w-full bg-gradient-to-r from-foreground to-muted-foreground text-background border-0 capitalize text-xs hover:text-white transition-colors h-9"
           onClick={handleAddToCart}
           disabled={product.stock <= 0}
         >
-          {product.stock > 0 && <ShoppingCart className="w-3.5 h-3.5" />}
+          <span className="absolute inset-0 -z-10 bg-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          {product.stock > 0 && <ShoppingCart className="w-3 h-3" />}
           {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
         </Button>
       </div>
