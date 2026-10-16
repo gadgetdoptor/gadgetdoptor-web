@@ -101,6 +101,7 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'pending': return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 uppercase text-[10px] rounded-full">Pending</Badge>;
+            case 'approved': return <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 uppercase text-[10px] rounded-full">Approved</Badge>;
             case 'processing': return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 uppercase text-[10px] rounded-full">Processing</Badge>;
             case 'shipped': return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 uppercase text-[10px] rounded-full">Shipped</Badge>;
             case 'delivered': return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 uppercase text-[10px] rounded-full">Delivered</Badge>;
@@ -183,6 +184,11 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                             ) : (
                                                 <div className="space-y-1">
                                                     {getStatusBadge(order.orderStatus)}
+                                                    {order.orderStatus === 'approved' && order.approvedAt && (
+                                                        <p className="text-[9px] text-muted-foreground font-medium">
+                                                            {format(new Date(order.approvedAt), "MMM d, h:mm a")}
+                                                        </p>
+                                                    )}
                                                     {order.orderStatus === 'processing' && order.processingAt && (
                                                         <p className="text-[9px] text-muted-foreground font-medium">
                                                             {format(new Date(order.processingAt), "MMM d, h:mm a")}
@@ -254,6 +260,9 @@ export function AdminOrdersTable({ initialOrders }: { initialOrders: any[] }) {
                                                     <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Order Status</DropdownMenuLabel>
                                                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'pending')} className="text-yellow-600">
                                                         <Clock className="mr-2 h-4 w-4" /> Mark Pending
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'approved')} className="text-teal-600">
+                                                        <CheckCircle className="mr-2 h-4 w-4" /> Approve Order
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'processing')} className="text-blue-600">
                                                         <Package className="mr-2 h-4 w-4" /> Mark Processing

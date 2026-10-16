@@ -6,9 +6,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Lock, User, Eye, EyeOff, ShieldCheck } from "lucide-react";
-import Image from "next/image";
 
 export default function AdminLoginPage() {
   const [identifier, setIdentifier] = useState("");
@@ -20,14 +19,14 @@ export default function AdminLoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier || !password) {
-      toast.error("Please enter both ID and password");
+      toast.error("Enter your username and password");
       return;
     }
 
     startTransition(async () => {
       const result = await loginAdmin({ identifier, password });
       if (result.success) {
-        toast.success("Welcome, Reyad!");
+        toast.success("Signed in");
         router.push("/admin/dashboard");
       } else {
         toast.error(result.message);
@@ -46,23 +45,18 @@ export default function AdminLoginPage() {
           <div className="inline-flex items-center justify-center p-3 bg-primary rounded-[14px] mb-4 shadow-xl shadow-primary/20">
             <ShieldCheck className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground mb-1">Admin</h1>
-          <p className="text-xs font-medium tracking-normal text-muted-foreground">Restricted administration access</p>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Admin</h1>
         </div>
 
         <Card className="rounded-[16px] border-border border-t-4 border-t-primary shadow-2xl bg-card/80 backdrop-blur-sm">
-          <CardHeader className="space-y-1 pb-2 pt-8">
-            <CardTitle className="text-lg font-bold tracking-tight">Identity verification</CardTitle>
-            <CardDescription className="text-xs font-medium text-muted-foreground">Enter your credentials to access the shop controls</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6 pb-8">
+          <CardContent className="py-8">
             <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Username / Email</label>
+                <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Username or Email</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Enter identifier"
+                    placeholder="Username or email"
                     className="pl-10 h-12 rounded-[10px] border-border focus-visible:ring-ring font-medium"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
@@ -72,7 +66,7 @@ export default function AdminLoginPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Secret Key</label>
+                <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -97,24 +91,18 @@ export default function AdminLoginPage() {
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="w-full h-14 bg-primary text-primary-foreground rounded-[10px] font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-lg shadow-primary/10 group"
+                  className="w-full h-14 bg-primary text-primary-foreground rounded-[10px] font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-lg shadow-primary/10 "
                 >
                   {isPending ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <div className="flex items-center gap-2">
-                      Initialize Session
-                    </div>
+                    "Sign in"
                   )}
                 </Button>
               </div>
             </form>
           </CardContent>
         </Card>
-
-        <p className="mt-8 text-center text-[10px] font-bold uppercase text-muted-foreground tracking-[0.1em]">
-          Powered by gadgetdoptor.net &bull; Automated Security Protocol 4.0
-        </p>
       </div>
     </div>
   );

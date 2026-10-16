@@ -46,7 +46,7 @@ export default function AccountPage() {
     const stats = useMemo(() => {
         const totalOrders = orders.length;
         const activeOrders = orders.filter((o: any) =>
-            ["pending", "processing", "shipped"].includes(o.orderStatus)
+            ["pending", "approved", "processing", "shipped"].includes(o.orderStatus)
         ).length;
         const deliveredOrders = orders.filter(
             (o: any) => o.orderStatus === "delivered"

@@ -737,7 +737,7 @@ const checkoutSchema = z.object({
   firstName: z.string().min(1, "First name is required."),
   lastName: z.string().min(1, "Last name is required."),
   mobile: z.string().min(11, "A valid 11-digit mobile number is required.").max(11, "A valid 11-digit mobile number is required."),
-  email: z.string().min(1, "Email is required.").email({ message: "Invalid email address." }),
+  email: z.string().email({ message: "Invalid email address." }).optional().or(z.literal("")),
   address: z.string().min(1, "Address is required."),
   district: z.string().min(1, "District is required."),
   deliveryMethod: z.string().min(1, "Delivery location is required."),
@@ -787,16 +787,10 @@ export async function processCheckout(
         }
       }
 
-      // 2. Decrement Stock for each item and increment version
-      for (const item of items) {
-        await tx.update(products)
-          .set({
-            stock: sql`${products.stock} - ${item.quantity}`,
-            version: sql`${products.version} + 1`,
-            updatedAt: new Date()
-          })
-          .where(eq(products.id, item.id));
-      }
+      // 2. Stock is NOT decremented here. Placing an order only reserves it
+      // conceptually; actual stock is deducted once an admin approves the
+      // order (see updateOrderStatus) so unapproved COD orders can't drain
+      // inventory.
 
       // 2.5 Coupon Usage
       if (couponId) {
@@ -1032,12 +1026,15 @@ export async function getUserOrders(uid: string) {
   try {
     const user = await db.query.users.findFirst({
       where: eq(users.id, uid),
-      columns: { email: true }
+      columns: { email: true, phoneNumber: true }
     });
 
     const conditions = [eq(orders.userId, uid)];
     if (user?.email) {
       conditions.push(eq(orders.email, user.email));
+    }
+    if (user?.phoneNumber) {
+      conditions.push(eq(orders.mobile, user.phoneNumber));
     }
 
     const userOrders = await db.query.orders.findMany({
@@ -1089,8 +1086,15 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
       if (!order) throw new Error("Order not found");
 
-      // Handle stock reversion if order is cancelled
-      if (status === 'cancelled' && order.orderStatus !== 'cancelled') {
+      // Stock is only reserved/deducted for orders the admin has approved
+      // (or moved further along). Orders sitting in 'pending' never touched
+      // stock, so cancelling a pending order must not add stock back.
+      const STOCK_HOLDING_STATUSES = ['approved', 'processing', 'shipped', 'delivered'];
+      const wasHoldingStock = STOCK_HOLDING_STATUSES.includes(order.orderStatus);
+      const willHoldStock = STOCK_HOLDING_STATUSES.includes(status);
+
+      if (wasHoldingStock && !willHoldStock) {
+        // Moving out of a stock-holding status (e.g. to 'cancelled') restores stock.
         for (const item of order.items) {
           await tx
             .update(products)
@@ -1099,19 +1103,17 @@ export async function updateOrderStatus(orderId: string, status: string) {
             })
             .where(eq(products.id, item.productId));
         }
-      }
-
-      // Handle stock deduction if a cancelled order is moved back to active status
-      if (order.orderStatus === 'cancelled' && status !== 'cancelled') {
+      } else if (!wasHoldingStock && willHoldStock) {
+        // Moving into a stock-holding status (e.g. admin approves a pending
+        // order, or un-cancels one) deducts stock, checking availability first.
         for (const item of order.items) {
-          // Check stock first
           const product = await tx.query.products.findFirst({
             where: eq(products.id, item.productId),
             columns: { stock: true, name: true }
           });
 
           if (!product || product.stock < item.quantity) {
-            throw new Error(`Insufficient stock for "${product?.name || 'product'}" to restore order.`);
+            throw new Error(`Insufficient stock for "${product?.name || 'product'}" to approve order.`);
           }
 
           await tx
@@ -1129,6 +1131,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
       };
 
       // Set specific timestamps based on status
+      if (status === 'approved') updateData.approvedAt = new Date();
       if (status === 'processing') updateData.processingAt = new Date();
       if (status === 'shipped') updateData.shippedAt = new Date();
       if (status === 'delivered') {
@@ -1350,25 +1353,35 @@ export async function createOrderManual(
     const itemsTotal = items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
     const finalTotal = itemsTotal + Number(deliveryFee) - Number(discountAmount);
 
+    // Local/POS sales are created as already 'delivered', and manual online
+    // orders default to 'pending' unless the admin explicitly sets a later
+    // status — only deduct stock up-front when the order starts in a
+    // stock-holding status, consistent with updateOrderStatus().
+    const resolvedOrderStatus = isOnline ? (data.orderStatus || 'pending') : 'delivered';
+    const STOCK_HOLDING_STATUSES = ['approved', 'processing', 'shipped', 'delivered'];
+    const shouldDeductStockNow = STOCK_HOLDING_STATUSES.includes(resolvedOrderStatus);
+
     const result: { success: true; orderNumber: string; totalAmount: number } = await db.transaction(async (tx) => {
       // 1. Stock Adjustment
-      for (const item of items) {
-        const product = await tx.query.products.findFirst({
-          where: eq(products.id, item.id),
-          columns: { stock: true, name: true }
-        });
+      if (shouldDeductStockNow) {
+        for (const item of items) {
+          const product = await tx.query.products.findFirst({
+            where: eq(products.id, item.id),
+            columns: { stock: true, name: true }
+          });
 
-        if (!product) throw new Error(`Product "${item.name}" not found.`);
-        if (product.stock < item.quantity) {
-          throw new Error(`Insufficient stock for "${product.name}". Only ${product.stock} available.`);
+          if (!product) throw new Error(`Product "${item.name}" not found.`);
+          if (product.stock < item.quantity) {
+            throw new Error(`Insufficient stock for "${product.name}". Only ${product.stock} available.`);
+          }
+
+          await tx.update(products)
+            .set({
+              stock: sql`${products.stock} - ${item.quantity}`,
+              updatedAt: new Date()
+            })
+            .where(eq(products.id, item.id));
         }
-
-        await tx.update(products)
-          .set({
-            stock: sql`${products.stock} - ${item.quantity}`,
-            updatedAt: new Date()
-          })
-          .where(eq(products.id, item.id));
       }
 
       // 1.5 Coupon Usage
@@ -1396,7 +1409,7 @@ export async function createOrderManual(
         couponId: couponId || null,
         discountAmount: String(discountAmount),
         paymentStatus: isOnline ? (data.paymentStatus || 'pending') : 'paid',
-        orderStatus: isOnline ? (data.orderStatus || 'pending') : 'delivered',
+        orderStatus: resolvedOrderStatus,
         orderSource: orderSource,
       });
 

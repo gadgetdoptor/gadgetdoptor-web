@@ -107,6 +107,7 @@ export const orders = pgTable('orders', {
   orderSource: varchar('order_source', { length: 20 }).default('online').notNull(),
   paymentId: varchar('payment_id', { length: 256 }),
   trxId: varchar('trx_id', { length: 256 }),
+  approvedAt: timestamp('approved_at'),
   processingAt: timestamp('processing_at'),
   shippedAt: timestamp('shipped_at'),
   deliveredAt: timestamp('delivered_at'),

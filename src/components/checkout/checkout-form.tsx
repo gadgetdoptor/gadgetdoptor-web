@@ -41,8 +41,9 @@ const checkoutSchema = z.object({
     .max(11, "A valid 11-digit mobile number is required."),
   email: z
     .string()
-    .min(1, "Email is required.")
-    .email({ message: "Invalid email address." }),
+    .email({ message: "Invalid email address." })
+    .optional()
+    .or(z.literal("")),
   address: z.string().min(1, "Address is required."),
   district: z.string().min(1, "District is required."),
   deliveryMethod: z.string().min(1, "Delivery location is required."),
@@ -374,7 +375,7 @@ export function CheckoutForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
-                      Email
+                      Email <span className="font-normal normal-case">(Optional)</span>
                     </FormLabel>
                     <FormControl>
                       <Input

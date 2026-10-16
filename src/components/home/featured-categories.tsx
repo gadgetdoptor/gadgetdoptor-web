@@ -33,17 +33,21 @@ export async function FeaturedCategories() {
           </div>
         </FadeUp>
 
-        <ScrollRow className="flex flex-nowrap overflow-x-auto overflow-y-hidden touch-pan-x no-scrollbar snap-x snap-mandatory gap-x-4 sm:gap-x-6 mt-6 md:mt-12 pt-1 pb-4 px-1 -mx-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:snap-none sm:gap-y-6 sm:pt-0 sm:pb-0 sm:px-0 sm:-mx-0">
-          {featuredCategories.map((category, index) => {
-            const imageUrl = category.imageUrl || "";
+        <FadeUp>
+          <ScrollRow className="flex flex-nowrap overflow-x-auto overflow-y-hidden touch-pan-x no-scrollbar snap-x snap-mandatory gap-x-4 sm:gap-x-6 mt-6 md:mt-12 pt-1 pb-4 px-1 -mx-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:snap-none sm:gap-y-6 sm:pt-0 sm:pb-0 sm:px-0 sm:-mx-0">
+            {featuredCategories.map((category) => {
+              const imageUrl = category.imageUrl || "";
 
-            return (
-              <FadeUp key={category.id} delay={index * 0.1}>
+              return (
                 <Link
+                  key={category.id}
                   href={`/category/${category.slug}`}
                   className="group flex flex-col items-center w-28 sm:w-36 md:w-40 shrink-0 snap-start transition-all duration-300"
                 >
-                  <div data-scroll-card className="relative w-full aspect-[9/10] rounded-2xl overflow-hidden bg-muted/40 border border-border flex flex-col shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-500">
+                  <div
+                    data-scroll-card
+                    className="relative w-full aspect-[9/10] rounded-2xl overflow-hidden bg-muted/40 border border-border flex flex-col shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-500"
+                  >
                     <div className="relative flex-1 w-full">
                       <div className="absolute inset-4 sm:inset-5 flex items-center justify-center">
                         {imageUrl ? (
@@ -71,10 +75,10 @@ export async function FeaturedCategories() {
                     </div>
                   </div>
                 </Link>
-              </FadeUp>
-            );
-          })}
-        </ScrollRow>
+              );
+            })}
+          </ScrollRow>
+        </FadeUp>
         <div className="flex justify-center mt-4 md:mt-8 lg:mt-12">
           <Link
             href="/category"

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Truck, Package, Clock } from "lucide-react";
+import { Check, Truck, Package, Clock, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Order } from "@/lib/types";
@@ -13,6 +13,7 @@ export function OrderProgress({ order }: { order: any }) {
 
     const steps = [
         { id: 'pending', label: 'Pending', icon: Clock, date: order.createdAt },
+        { id: 'approved', label: 'Approved', icon: ShieldCheck, date: order.approvedAt },
         { id: 'processing', label: 'Processing', icon: Package, date: order.processingAt },
         { id: 'shipped', label: 'Shipped', icon: Truck, date: order.shippedAt },
         { id: 'delivered', label: 'Delivered', icon: Check, date: order.deliveredAt },
