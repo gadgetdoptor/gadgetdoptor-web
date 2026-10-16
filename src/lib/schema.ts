@@ -40,6 +40,7 @@ export const products = pgTable('products', {
     .primaryKey()
     .$defaultFn(() => createId()),
   sku: integer('sku'),
+  barcode: varchar('barcode', { length: 32 }).unique(),
   name: varchar('name', { length: 256 }).notNull(),
   slug: varchar('slug', { length: 256 }).notNull().unique(),
   description: text('description'),

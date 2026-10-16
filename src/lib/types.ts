@@ -23,6 +23,7 @@ export type Category = {
 export type Product = {
   id: string;
   sku?: number | null;
+  barcode?: string | null;
   name: string;
   slug: string;
   description: string;

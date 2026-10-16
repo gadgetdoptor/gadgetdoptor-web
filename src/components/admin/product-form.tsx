@@ -25,7 +25,7 @@ import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { createCategoryJson, createBrandJson, uploadImage, getLatestSku, checkProductSku, checkProductSlug } from "@/lib/actions";
+import { createCategoryJson, createBrandJson, uploadImage, getLatestSku, checkProductSku, checkProductSlug, checkProductBarcode, generateEan13FromSku } from "@/lib/actions";
 import { SlugFormField } from "./slug-form-field";
 import { Switch } from "@/components/ui/switch";
 import { ImageUploader } from "./image-uploader";
@@ -38,6 +38,7 @@ interface ProductFormValues {
     name: string;
     slug: string;
     sku: number | null;
+    barcode: string | null;
     description: string;
     price: number;
     originalPrice: number | null;
@@ -57,6 +58,7 @@ const productFormSchema = z.object({
     name: z.string().min(3, "Product name must be at least 3 characters long."),
     slug: z.string().min(3, "Slug must be at least 3 characters long."),
     sku: z.preprocess((val) => (val === "" || val === null ? null : Number(val)), z.number().int("SKU must be a whole number.").min(1, "SKU is required.")),
+    barcode: z.preprocess((val) => (val === "" || val === null ? null : val), z.string().regex(/^[0-9]{8,14}$/, "Barcode must be 8-14 digits (EAN/UPC).").nullable()),
     // Description is no longer required
     description: z.string().optional(),
     price: z.preprocess((val) => Number(val), z.number().min(0)),
@@ -110,6 +112,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
             name: product?.name || "",
             slug: product?.slug ?? "",
             sku: product?.sku ?? null,
+            barcode: product?.barcode ?? null,
             description: product?.description || "",
             price: product?.price || 0,
             originalPrice: product?.originalPrice ?? null,
@@ -205,6 +208,19 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
             }
         }
 
+        if (data.barcode && (isNewProduct || data.barcode !== product?.barcode)) {
+            const barcodeCheck = await checkProductBarcode(data.barcode, product?.id);
+            if (!barcodeCheck.isUnique) {
+                form.setError("barcode", { type: "manual", message: barcodeCheck.message });
+                toast({
+                    variant: "destructive",
+                    title: "Invalid Barcode",
+                    description: barcodeCheck.message,
+                });
+                return;
+            }
+        }
+
         if (data.slug && (isNewProduct || data.slug !== product?.slug)) {
             const slugCheck = await checkProductSlug(data.slug, product?.id);
             if (!slugCheck.isUnique) {
@@ -265,6 +281,7 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                 name: data.name,
                 slug: data.slug,
                 sku: Number(data.sku),
+                barcode: data.barcode || null,
                 description: data.description || "",
                 price: Number(data.price),
                 originalPrice: data.originalPrice ? Number(data.originalPrice) : null,
@@ -292,6 +309,9 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                     }
                     if (result.errors.sku) {
                         form.setError("sku", { type: "server", message: result.errors.sku[0] });
+                    }
+                    if (result.errors.barcode) {
+                        form.setError("barcode", { type: "server", message: result.errors.barcode[0] });
                     }
                     if (result.errors.slug) {
                         form.setError("slug", { type: "server", message: result.errors.slug[0] });
@@ -489,6 +509,55 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                                 <CardHeader><CardTitle>Inventory</CardTitle></CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-2 gap-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="barcode"
+                                            render={({ field }) => (
+                                                <FormItem className="col-span-2">
+                                                    <FormLabel>Barcode (EAN/UPC)</FormLabel>
+                                                    <div className="flex gap-2">
+                                                        <FormControl>
+                                                            <Input
+                                                                placeholder="e.g. 2000000012345"
+                                                                {...field}
+                                                                value={field.value ?? ""}
+                                                                disabled={isSubmitting}
+                                                                onChange={(e) => {
+                                                                    const value = e.target.value.replace(/[^0-9]/g, '');
+                                                                    field.onChange(value === "" ? null : value);
+                                                                    if (form.formState.errors.barcode) form.clearErrors("barcode");
+                                                                }}
+                                                                onBlur={async (e) => {
+                                                                    field.onBlur();
+                                                                    const val = e.target.value;
+                                                                    if (val && val !== product?.barcode) {
+                                                                        const check = await checkProductBarcode(val, product?.id);
+                                                                        if (!check.isUnique) {
+                                                                            form.setError("barcode", { type: "manual", message: check.message });
+                                                                        }
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            disabled={isSubmitting || !form.getValues("sku")}
+                                                            onClick={async () => {
+                                                                const sku = form.getValues("sku");
+                                                                if (!sku) return;
+                                                                field.onChange(await generateEan13FromSku(sku));
+                                                                form.clearErrors("barcode");
+                                                            }}
+                                                        >
+                                                            Generate
+                                                        </Button>
+                                                    </div>
+                                                    <FormDescription>Used for barcode scanning in POS and on the product page.</FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                         <FormField
                                             control={form.control}
                                             name="sku"
@@ -836,6 +905,11 @@ export function ProductForm({ product, brands: initialBrands, categories: initia
                     </div>
 
                     <div className="flex justify-end gap-2">
+                        {product && (
+                            <Button variant="outline" asChild type="button">
+                                <Link href={`/admin/products/${product.id}/barcode`} target="_blank">Print Barcode</Link>
+                            </Button>
+                        )}
                         <Button variant="outline" asChild type="button">
                             <Link href="/admin/products">Cancel</Link>
                         </Button>

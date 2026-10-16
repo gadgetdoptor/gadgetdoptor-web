@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { Search, Plus, Minus, Trash2, User, Phone, CheckCircle, Package, ArrowLeft, Loader2, CreditCard, Banknote, Smartphone, X, Mail, MapPin, Truck, Globe, Store, Percent } from "lucide-react";
+import { Search, Plus, Minus, Trash2, User, Phone, CheckCircle, Package, ArrowLeft, Loader2, CreditCard, Banknote, Smartphone, X, Mail, MapPin, Truck, Globe, Store, Percent, ScanLine } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { searchProducts, createOrderManual, validateCoupon } from "@/lib/actions";
+import { searchProducts, createOrderManual, validateCoupon, findProductByScannedBarcode } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BarcodeScanner } from "@/components/barcode-scanner";
 
 import {
   Select,
@@ -39,8 +41,10 @@ import { DistrictSelect } from "@/components/district-select";
 
 export function POSSystem() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchBy, setSearchBy] = useState<'all' | 'sku'>('all');
+  const [searchBy, setSearchBy] = useState<'all' | 'sku' | 'barcode'>('all');
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isScannerOpen, setScannerOpen] = useState(false);
+  const [isLookingUpScan, setIsLookingUpScan] = useState(false);
   const [cart, setCart] = useState<POSItem[]>([]);
   const [orderSource, setOrderSource] = useState<'local' | 'online'>('local');
   const [customer, setCustomer] = useState({ 
@@ -60,7 +64,7 @@ export function POSSystem() {
   const [couponDiscount, setCouponDiscount] = useState(0);
   const router = useRouter();
 
-  const handleSearch = async (val: string, mode: 'all' | 'sku' = searchBy) => {
+  const handleSearch = async (val: string, mode: 'all' | 'sku' | 'barcode' = searchBy) => {
     setSearchTerm(val);
     if (val.length < 1) {
       setSearchResults([]);
@@ -108,6 +112,25 @@ export function POSSystem() {
     });
     setSearchTerm("");
     setSearchResults([]);
+  };
+
+  const handleScan = async (value: string) => {
+    setScannerOpen(false);
+    setIsLookingUpScan(true);
+    try {
+      const product = await findProductByScannedBarcode(value);
+      if (!product) {
+        toast.error(`No product found for barcode ${value}`);
+        return;
+      }
+      addToCart(product);
+      toast.success(`Added "${product.name}" to basket`);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to look up scanned barcode");
+    } finally {
+      setIsLookingUpScan(false);
+    }
   };
 
   const removeFromCart = (id: string) => {
@@ -249,9 +272,9 @@ export function POSSystem() {
                <div className="flex gap-2 relative">
                   <div className="relative flex-1 group/search">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
+                    <Input
                       type="text"
-                      placeholder={searchBy === 'sku' ? "Add by SKU..." : "Add products to basket..."}
+                      placeholder={searchBy === 'sku' ? "Add by SKU..." : searchBy === 'barcode' ? "Add by barcode..." : "Add products to basket..."}
                       className="!pl-8 !pr-8 !h-9 rounded-[10px] border-border text-sm focus-visible:ring-ring px-4 bg-card"
                       value={searchTerm}
                       onChange={(e) => handleSearch(e.target.value)}
@@ -295,14 +318,25 @@ export function POSSystem() {
                   </div>
 
                   <Select value={searchBy} onValueChange={(val: any) => setSearchBy(val)}>
-                    <SelectTrigger className="w-[80px] h-9 rounded-[10px] border-border font-black text-[10px] uppercase bg-card">
+                    <SelectTrigger className="w-[90px] h-9 rounded-[10px] border-border font-black text-[10px] uppercase bg-card">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-[10px] border-border">
                       <SelectItem value="all" className="text-[10px] font-black uppercase">Name</SelectItem>
                       <SelectItem value="sku" className="text-[10px] font-black uppercase">SKU</SelectItem>
+                      <SelectItem value="barcode" className="text-[10px] font-black uppercase">Barcode</SelectItem>
                     </SelectContent>
                   </Select>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-9 rounded-[10px] border-border px-3"
+                    disabled={isLookingUpScan}
+                    onClick={() => setScannerOpen(true)}
+                  >
+                    {isLookingUpScan ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}
+                  </Button>
                </div>
             </div>
             
@@ -523,6 +557,15 @@ export function POSSystem() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={isScannerOpen} onOpenChange={setScannerOpen}>
+        <DialogContent className="rounded-[16px] border-border sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Scan barcode</DialogTitle>
+          </DialogHeader>
+          <BarcodeScanner active={isScannerOpen} onScan={handleScan} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { db } from '@/lib/db';
 import { products, brands, categories, heroSliders, users, orders, orderItems, reviews, coupons, admins, settings, activityLogs, deliveryLocations } from '@/lib/schema';
 import { eq, and, ne, desc, inArray, or, sql, asc, count as drizzleCount } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
-import { getProducts, getProductById, getBrandById, getCategoryById, getHeroSliderById } from './data';
+import { getProducts, getProductById, getProductByBarcode, getBrandById, getCategoryById, getHeroSliderById } from './data';
 import { generateSlug } from '@/lib/utils';
 import { sendTelegramNotification, sendContactMessageNotification } from './telegram';
 import { logActivity } from '@/lib/logger';
@@ -53,6 +53,10 @@ const productFormSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters long."),
   slug: z.string().min(3, "Slug must be at least 3 characters long.").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug format: only lowercase letters, numbers, and hyphens are allowed.'),
   sku: z.coerce.number().int("SKU must be a whole number.").min(1, "SKU is required."),
+  barcode: z.preprocess(
+    (val) => (val === "" ? null : val),
+    z.string().regex(/^[0-9]{8,14}$/, "Barcode must be 8-14 digits (EAN/UPC).").nullable().optional()
+  ),
   description: z.string().optional(),
   price: z.coerce.number().min(0, "Price cannot be negative."),
   originalPrice: z.preprocess(
@@ -86,7 +90,7 @@ export async function createProduct(data: unknown) {
     };
   }
 
-  const { slug, sku } = validatedFields.data;
+  const { slug, sku, barcode } = validatedFields.data;
 
   const existingProduct = await db.query.products.findFirst({ where: eq(products.slug, slug) });
   if (existingProduct) {
@@ -98,12 +102,20 @@ export async function createProduct(data: unknown) {
     return { success: false, message: `A product with this SKU (${sku}) already exists.` };
   }
 
+  if (barcode) {
+    const existingProductBarcode = await db.query.products.findFirst({ where: eq(products.barcode, barcode) });
+    if (existingProductBarcode) {
+      return { success: false, message: `A product with this barcode (${barcode}) already exists.` };
+    }
+  }
+
   const images = validatedFields.data.images || [];
 
   try {
     await db.insert(products).values({
       id: createId(),
       ...validatedFields.data,
+      barcode: barcode || null,
       description: validatedFields.data.description || null,
       categoryId: validatedFields.data.categoryId || null,
       brandId: validatedFields.data.brandId || null,
@@ -150,7 +162,7 @@ export async function updateProduct(id: string, data: unknown) {
     };
   }
 
-  const { slug, sku } = validatedFields.data;
+  const { slug, sku, barcode } = validatedFields.data;
   const existingProduct = await db.query.products.findFirst({
     where: and(eq(products.slug, slug), ne(products.id, id)),
   });
@@ -163,6 +175,15 @@ export async function updateProduct(id: string, data: unknown) {
   });
   if (existingProductSku) {
     return { success: false, message: `A product with this SKU (${sku}) already exists.` };
+  }
+
+  if (barcode) {
+    const existingProductBarcode = await db.query.products.findFirst({
+      where: and(eq(products.barcode, barcode), ne(products.id, id)),
+    });
+    if (existingProductBarcode) {
+      return { success: false, message: `A product with this barcode (${barcode}) already exists.` };
+    }
   }
 
   const images = validatedFields.data.images || [];
@@ -182,6 +203,7 @@ export async function updateProduct(id: string, data: unknown) {
 
     await db.update(products).set({
       ...validatedFields.data,
+      barcode: barcode || null,
       description: validatedFields.data.description || null,
       categoryId: validatedFields.data.categoryId || null,
       brandId: validatedFields.data.brandId || null,
@@ -588,6 +610,39 @@ export async function checkProductSku(val: string | number, id?: string) {
   }
 }
 
+export async function checkProductBarcode(barcode: string, id?: string) {
+  if (!barcode) return { isUnique: false, message: 'Barcode cannot be empty.' };
+  try {
+    const query = db.query.products.findFirst({
+      where: id
+        ? and(eq(products.barcode, barcode), ne(products.id, id))
+        : eq(products.barcode, barcode),
+    });
+    const existing = await query;
+    if (existing) {
+      return { isUnique: false, message: 'This barcode is already in use.' };
+    }
+    return { isUnique: true, message: 'Barcode is available.' };
+  } catch (error) {
+    console.error(error);
+    return { isUnique: false, message: 'Error checking barcode.' };
+  }
+}
+
+// Generates a unique EAN-13 barcode from a product's SKU: a '20' in-store
+// prefix (standard for internally-assigned, non-GS1 codes) + the SKU
+// zero-padded to 10 digits + a computed EAN-13 check digit.
+export async function generateEan13FromSku(sku: number): Promise<string> {
+  const body = `20${String(sku).padStart(10, '0')}`;
+  let sum = 0;
+  for (let i = 0; i < body.length; i++) {
+    const digit = Number(body[i]);
+    sum += i % 2 === 0 ? digit : digit * 3;
+  }
+  const checkDigit = (10 - (sum % 10)) % 10;
+  return `${body}${checkDigit}`;
+}
+
 export async function getLatestSku() {
   try {
     const latestProduct = await db.query.products.findFirst({
@@ -954,12 +1009,26 @@ export async function verifyCartStock(items: { id: string; quantity: number }[])
 }
 
 
-export async function searchProducts(query: string, limit: number, searchBy: 'all' | 'sku' = 'all') {
+export async function searchProducts(query: string, limit: number, searchBy: 'all' | 'sku' | 'barcode' = 'all') {
   if (!query) {
     return [];
   }
   const { products } = await getProducts({ query, limit, searchBy });
   return products;
+}
+
+// Looks up a single product by scanned barcode, for POS quick-add. Includes
+// unpublished/out-of-stock products, unlike the public-facing lookup below.
+export async function findProductByScannedBarcode(barcode: string) {
+  if (!barcode) return null;
+  const product = await db.query.products.findFirst({ where: eq(products.barcode, barcode) });
+  return product ?? null;
+}
+
+// Public scan-to-view/buy lookup: only published products, used by the /scan page.
+export async function lookupProductByBarcode(barcode: string) {
+  const product = await getProductByBarcode(barcode);
+  return product ?? null;
 }
 
 export async function uploadImage(formData: FormData): Promise<{ success: boolean; url?: string; message?: string; }> {

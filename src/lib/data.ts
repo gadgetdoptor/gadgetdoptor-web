@@ -40,12 +40,14 @@ export async function getAllBrandSlugs() {
 }
 
 // Product Functions
-export const getProducts = async (options?: { query?: string, limit?: number, page?: number, isTrending?: boolean, isBestSelling?: boolean, isFeatured?: boolean, sortBy?: string, categoryId?: string, categoryIds?: string[], brandId?: string, brandIds?: string[], excludeProductId?: string, searchBy?: 'all' | 'sku', status?: string | null }): Promise<{ products: Product[], totalCount: number }> => {
+export const getProducts = async (options?: { query?: string, limit?: number, page?: number, isTrending?: boolean, isBestSelling?: boolean, isFeatured?: boolean, sortBy?: string, categoryId?: string, categoryIds?: string[], brandId?: string, brandIds?: string[], excludeProductId?: string, searchBy?: 'all' | 'sku' | 'barcode', status?: string | null }): Promise<{ products: Product[], totalCount: number }> => {
   const { query, limit, page, isTrending, isBestSelling, isFeatured, sortBy, categoryId, categoryIds, brandId, brandIds, excludeProductId, searchBy = 'all', status = 'published' } = options || {};
   try {
     const conditions = [];
     if (query && query.trim().length > 0) {
-      if (searchBy === 'sku') {
+      if (searchBy === 'barcode') {
+        conditions.push(eq(productsTable.barcode, query.trim()));
+      } else if (searchBy === 'sku') {
         const queryAsNumber = parseInt(query);
         if (!isNaN(queryAsNumber)) {
           conditions.push(eq(productsTable.sku, queryAsNumber));
@@ -143,6 +145,7 @@ export const getProducts = async (options?: { query?: string, limit?: number, pa
       .select({
         id: productsTable.id,
         sku: productsTable.sku,
+        barcode: productsTable.barcode,
         name: productsTable.name,
         slug: productsTable.slug,
         description: productsTable.description,
@@ -224,6 +227,7 @@ export const getProductById = cache(async (
       .select({
         id: productsTable.id,
         sku: productsTable.sku,
+        barcode: productsTable.barcode,
         name: productsTable.name,
         slug: productsTable.slug,
         description: productsTable.description,
@@ -276,6 +280,7 @@ export const getProductBySlug = cache(async (
       .select({
         id: productsTable.id,
         sku: productsTable.sku,
+        barcode: productsTable.barcode,
         name: productsTable.name,
         slug: productsTable.slug,
         description: productsTable.description,
@@ -315,6 +320,59 @@ export const getProductBySlug = cache(async (
     } as Product;
   } catch (error) {
     console.error('Failed to fetch product by slug:', error);
+    return undefined;
+  }
+});
+
+export const getProductByBarcode = cache(async (
+  barcode: string
+): Promise<Product | undefined> => {
+  if (!barcode) return undefined;
+  try {
+    const result = await db
+      .select({
+        id: productsTable.id,
+        sku: productsTable.sku,
+        barcode: productsTable.barcode,
+        name: productsTable.name,
+        slug: productsTable.slug,
+        description: productsTable.description,
+        price: productsTable.price,
+        originalPrice: productsTable.originalPrice,
+        buyPrice: productsTable.buyPrice,
+        images: productsTable.images,
+        stock: productsTable.stock,
+        keywords: productsTable.keywords,
+        categoryId: productsTable.categoryId,
+        brandId: productsTable.brandId,
+        isTrending: productsTable.isTrending,
+        isBestSelling: productsTable.isBestSelling,
+        isFeatured: productsTable.isFeatured,
+        status: productsTable.status,
+        discount: productsTable.discount,
+        createdAt: productsTable.createdAt,
+        category: categoriesTable.name,
+        categorySlug: categoriesTable.slug,
+        brand: brandsTable.name,
+      })
+      .from(productsTable)
+      .leftJoin(categoriesTable, eq(productsTable.categoryId, categoriesTable.id))
+      .leftJoin(brandsTable, eq(productsTable.brandId, brandsTable.id))
+      .where(and(eq(productsTable.barcode, barcode), eq(productsTable.status, 'published')));
+
+    if (result.length === 0) {
+      return undefined;
+    }
+    const product = result[0];
+    return {
+      ...product,
+      price: Number(product.price),
+      originalPrice: product.originalPrice ? Number(product.originalPrice) : null,
+      buyPrice: product.buyPrice ? Number(product.buyPrice) : null,
+      discount: Number(product.discount),
+    } as Product;
+  } catch (error) {
+    console.error('Failed to fetch product by barcode:', error);
     return undefined;
   }
 });
