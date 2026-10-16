@@ -3,7 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 import { FadeUp } from "../animations/fade-up";
-import { ScrollRow } from "./scroll-row";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export async function FeaturedCategories() {
   let categories = await getCategories({ isFeatured: true });
@@ -34,50 +40,60 @@ export async function FeaturedCategories() {
         </FadeUp>
 
         <FadeUp>
-          <ScrollRow className="flex flex-nowrap overflow-x-auto overflow-y-hidden touch-pan-x no-scrollbar snap-x snap-mandatory gap-x-4 sm:gap-x-6 mt-6 md:mt-12 pt-1 pb-4 px-1 -mx-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:snap-none sm:gap-y-6 sm:pt-0 sm:pb-0 sm:px-0 sm:-mx-0">
-            {featuredCategories.map((category) => {
-              const imageUrl = category.imageUrl || "";
+          <Carousel
+            opts={{ align: "start" }}
+            className="w-full mt-6 md:mt-12"
+          >
+            <div className="relative">
+              <CarouselContent className="py-2">
+                {featuredCategories.map((category) => {
+                  const imageUrl = category.imageUrl || "";
 
-              return (
-                <Link
-                  key={category.id}
-                  href={`/category/${category.slug}`}
-                  className="group flex flex-col items-center w-28 sm:w-36 md:w-40 shrink-0 snap-start transition-all duration-300"
-                >
-                  <div
-                    data-scroll-card
-                    className="relative w-full aspect-[9/10] rounded-2xl overflow-hidden bg-muted/40 border border-border flex flex-col shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-500"
-                  >
-                    <div className="relative flex-1 w-full">
-                      <div className="absolute inset-4 sm:inset-5 flex items-center justify-center">
-                        {imageUrl ? (
-                          <Image
-                            src={imageUrl}
-                            alt={category.name}
-                            fill
-                            className="object-contain scale-95 group-hover:scale-105 transition-transform duration-700 ease-out"
-                            sizes="(max-width: 640px) 40vw, 20vw"
-                          />
-                        ) : (
-                          <ShoppingBag
-                            className="w-10 h-10 text-muted-foreground/50"
-                            strokeWidth={1}
-                          />
-                        )}
-                      </div>
-                    </div>
+                  return (
+                    <CarouselItem
+                      key={category.id}
+                      className="basis-[clamp(100px,22vw,176px)]"
+                    >
+                      <Link
+                        href={`/category/${category.slug}`}
+                        className="group flex flex-col items-center w-full transition-all duration-300"
+                      >
+                        <div className="relative w-full aspect-[9/10] rounded-2xl overflow-hidden bg-muted/40 border border-border flex flex-col shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-500">
+                          <div className="relative flex-1 w-full">
+                            <div className="absolute inset-4 sm:inset-5 flex items-center justify-center">
+                              {imageUrl ? (
+                                <Image
+                                  src={imageUrl}
+                                  alt={category.name}
+                                  fill
+                                  className="object-contain scale-95 group-hover:scale-105 transition-transform duration-700 ease-out"
+                                  sizes="22vw"
+                                />
+                              ) : (
+                                <ShoppingBag
+                                  className="w-10 h-10 text-muted-foreground/50"
+                                  strokeWidth={1}
+                                />
+                              )}
+                            </div>
+                          </div>
 
-                    {/* Typography inside the card */}
-                    <div className="h-9 flex items-start justify-center px-2 pb-5">
-                      <h3 className="text-xs leading-4 text-foreground group-hover:text-orange-600 transition-colors text-center line-clamp-2">
-                        {category.name}
-                      </h3>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </ScrollRow>
+                          {/* Typography inside the card */}
+                          <div className="h-9 flex items-start justify-center px-2 pb-5">
+                            <h3 className="text-xs leading-4 text-foreground group-hover:text-orange-600 transition-colors text-center line-clamp-2">
+                              {category.name}
+                            </h3>
+                          </div>
+                        </div>
+                      </Link>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+              <CarouselPrevious className="flex left-0 -translate-x-1/2 h-9 w-9 md:h-10 md:w-10 backdrop-blur-md bg-background/70 border border-border/50 shadow-lg hover:bg-orange-600 hover:text-white hover:border-orange-600 disabled:hidden transition-colors" />
+              <CarouselNext className="flex right-0 translate-x-1/2 h-9 w-9 md:h-10 md:w-10 backdrop-blur-md bg-background/70 border border-border/50 shadow-lg hover:bg-orange-600 hover:text-white hover:border-orange-600 disabled:hidden transition-colors" />
+            </div>
+          </Carousel>
         </FadeUp>
         <div className="flex justify-center mt-4 md:mt-8 lg:mt-12">
           <Link

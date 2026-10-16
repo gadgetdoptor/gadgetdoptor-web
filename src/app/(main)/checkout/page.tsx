@@ -146,7 +146,10 @@ export default function CheckoutPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
-                            Email
+                            Email{" "}
+                            <span className="font-normal normal-case">
+                              (Optional)
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Input
