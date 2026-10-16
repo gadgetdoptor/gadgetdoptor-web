@@ -31,7 +31,7 @@ export async function FeaturedBrands() {
                     </div>
                 </FadeUp>
 
-                <ScrollRow className="flex flex-nowrap overflow-x-auto overflow-y-hidden touch-pan-x no-scrollbar snap-x snap-mandatory gap-4 sm:gap-6 pb-4 px-1 -mx-1 sm:grid sm:grid-cols-4 lg:grid-cols-8 sm:overflow-visible sm:snap-none sm:pb-0 sm:px-0 sm:-mx-0">
+                <ScrollRow className="flex flex-nowrap overflow-x-auto overflow-y-hidden touch-pan-x no-scrollbar snap-x snap-proximity gap-4 sm:gap-6 pb-4 px-1 -mx-1 sm:grid sm:grid-cols-4 lg:grid-cols-8 sm:overflow-visible sm:snap-none sm:pb-0 sm:px-0 sm:-mx-0">
                     {brands.map((brand, index) => (
                         <FadeUp key={brand.id} delay={index * 0.05} distance={20}>
                             <Link href={`/brand/${brand.slug}`} className="group flex flex-col items-start gap-2 w-24 sm:w-full sm:max-w-[7.5rem] shrink-0 snap-start transition-all duration-300">

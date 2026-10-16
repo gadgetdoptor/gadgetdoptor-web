@@ -100,60 +100,70 @@ export default function SettingsPage() {
     );
   };
 
+  const SaveButton = (
+    <div className="flex justify-end">
+      <Button
+        onClick={handleSave}
+        disabled={isPending}
+        className="w-full sm:w-auto rounded-[10px] bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-7 font-bold text-sm"
+      >
+        {isPending ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Save className="mr-2 h-4 w-4" />
+        )}
+        Save changes
+      </Button>
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl font-bold font-headline tracking-tight">
-            Shop configuration
-          </h1>
-          <p className="text-muted-foreground text-xs font-bold tracking-tight">
-            Central control for global branding & operations.
-          </p>
-        </div>
-        <Button
-          onClick={handleSave}
-          disabled={isPending}
-          className="w-full sm:w-auto rounded-[10px] bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-8 font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20"
-        >
-          {isPending ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="mr-2 h-4 w-4" />
-          )}
-          Commit Changes
-        </Button>
+      <div>
+        <h1 className="text-xl font-bold font-headline tracking-tight">
+          Shop configuration
+        </h1>
+        <p className="text-muted-foreground text-xs font-bold tracking-tight">
+          Central control for global branding & operations.
+        </p>
       </div>
 
-      <Tabs defaultValue="general" className="w-full">
-        <TabsList className="bg-transparent border-b border-border w-full justify-start h-auto p-0 mb-8 overflow-x-auto overflow-hidden hide-scrollbar">
+      <Tabs defaultValue="general" className="w-full gap-0">
+        <TabsList
+          variant="line"
+          className="w-full flex justify-start gap-1 overflow-x-auto no-scrollbar border-b border-border bg-transparent p-0 group-data-[orientation=horizontal]/tabs:h-auto"
+        >
           <TabsTrigger
             value="general"
-            className="border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent px-6 py-4 font-black uppercase tracking-widest text-[10px]"
+            className="flex-none shrink-0 gap-2 rounded-none border-0 px-4 py-3.5 text-sm font-semibold text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-orange-600 data-[state=active]:shadow-none group-data-[orientation=horizontal]/tabs:after:h-[3px] after:rounded-full after:bg-orange-600 hover:text-foreground"
           >
+            <Store className="h-4 w-4" />
             General
           </TabsTrigger>
           <TabsTrigger
             value="contact"
-            className="border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent px-6 py-4 font-black uppercase tracking-widest text-[10px]"
+            className="flex-none shrink-0 gap-2 rounded-none border-0 px-4 py-3.5 text-sm font-semibold text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-orange-600 data-[state=active]:shadow-none group-data-[orientation=horizontal]/tabs:after:h-[3px] after:rounded-full after:bg-orange-600 hover:text-foreground"
           >
+            <Search className="h-4 w-4" />
             Contact & SEO
           </TabsTrigger>
           <TabsTrigger
             value="social"
-            className="border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent px-6 py-4 font-black uppercase tracking-widest text-[10px]"
+            className="flex-none shrink-0 gap-2 rounded-none border-0 px-4 py-3.5 text-sm font-semibold text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-orange-600 data-[state=active]:shadow-none group-data-[orientation=horizontal]/tabs:after:h-[3px] after:rounded-full after:bg-orange-600 hover:text-foreground"
           >
+            <Share2 className="h-4 w-4" />
             Social Media
           </TabsTrigger>
           <TabsTrigger
             value="shipping"
-            className="border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent px-6 py-4 font-black uppercase tracking-widest text-[10px]"
+            className="flex-none shrink-0 gap-2 rounded-none border-0 px-4 py-3.5 text-sm font-semibold text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-orange-600 data-[state=active]:shadow-none group-data-[orientation=horizontal]/tabs:after:h-[3px] after:rounded-full after:bg-orange-600 hover:text-foreground"
           >
+            <MapPin className="h-4 w-4" />
             Shipping
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="general" className="mt-0 space-y-6">
+        <TabsContent value="general" className="mt-6 space-y-6">
           <Card className="rounded-[16px] border-border shadow-none">
             <CardHeader className="border-b border-border pb-4">
               <CardTitle className="text-lg font-bold tracking-tight">
@@ -190,9 +200,10 @@ export default function SettingsPage() {
               />
             </CardContent>
           </Card>
+          {SaveButton}
         </TabsContent>
 
-        <TabsContent value="contact" className="mt-0 space-y-6">
+        <TabsContent value="contact" className="mt-6 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="rounded-[16px] border-border shadow-none">
               <CardHeader className="border-b border-border">
@@ -259,9 +270,10 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           </div>
+          {SaveButton}
         </TabsContent>
 
-        <TabsContent value="social" className="mt-0 space-y-6">
+        <TabsContent value="social" className="mt-6 space-y-6">
           <Card className="rounded-[16px] border-border shadow-none">
             <CardHeader className="border-b border-border">
               <CardTitle className="text-lg font-bold tracking-tight">
@@ -295,9 +307,10 @@ export default function SettingsPage() {
               )}
             </CardContent>
           </Card>
+          {SaveButton}
         </TabsContent>
 
-        <TabsContent value="shipping" className="mt-0 space-y-6">
+        <TabsContent value="shipping" className="mt-6 space-y-6">
           <Card className="rounded-[16px] border-border shadow-none">
             <CardHeader className="border-b border-border">
               <CardTitle className="text-lg font-bold tracking-tight">

@@ -732,6 +732,22 @@ export async function deleteHeroSlider(id: string) {
 }
 
 
+// Generates a short, customer-facing order number. Not guaranteed unique on
+// its own (two orders can land in the same millisecond window), so callers
+// that insert it under a unique constraint should retry with a fresh one
+// via `isUniqueViolation` below.
+function generateOrderNumber(prefix = ''): string {
+  const random = Math.floor(1000 + Math.random() * 9000); // 4 digits
+  return `${prefix}${Date.now().toString().slice(-8)}${random}`;
+}
+
+// Detects a Postgres unique-constraint violation (SQLSTATE 23505) thrown by
+// the `postgres` driver, regardless of how deep it's nested (drizzle/next
+// can wrap the original error).
+function isUniqueViolation(error: any): boolean {
+  return error?.code === '23505' || error?.cause?.code === '23505';
+}
+
 // Checkout Action
 const checkoutSchema = z.object({
   firstName: z.string().min(1, "First name is required."),
@@ -760,14 +776,13 @@ export async function processCheckout(
     return { success: false, message: 'Invalid checkout data.' };
   }
 
-  const { paymentMethod, email, mobile } = validatedFields.data;
+  const checkoutData = validatedFields.data;
 
-  try {
-    const orderNumber = `${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 100)}`;
-    const deliveryFee = String(await getDeliveryFeeForLocation(validatedFields.data.deliveryMethod));
+  let orderNumber = generateOrderNumber();
 
-    // Wrap the entire checkout process in a transaction
-    const result: { success: true; url: string; orderId: string; productDetails: string[] } = await db.transaction(async (tx) => {
+  // Runs the actual order-creation transaction for the current orderNumber.
+  async function runCheckoutTransaction(deliveryFee: string) {
+    return db.transaction(async (tx) => {
       // 1. Verify Stock Availability for ALL items first
       const itemsWithNames: { id: string, name: string }[] = [];
       for (const item of items) {
@@ -804,17 +819,17 @@ export async function processCheckout(
       await tx.insert(orders).values({
         id: orderId,
         orderNumber,
-        userId: validatedFields.data.userId || null,
-        firstName: validatedFields.data.firstName,
-        lastName: validatedFields.data.lastName,
-        mobile: validatedFields.data.mobile,
-        email: validatedFields.data.email || null,
-        address: validatedFields.data.address,
-        district: validatedFields.data.district,
-        deliveryMethod: validatedFields.data.deliveryMethod,
+        userId: checkoutData.userId || null,
+        firstName: checkoutData.firstName,
+        lastName: checkoutData.lastName,
+        mobile: checkoutData.mobile,
+        email: checkoutData.email || null,
+        address: checkoutData.address,
+        district: checkoutData.district,
+        deliveryMethod: checkoutData.deliveryMethod,
         deliveryFee,
         totalAmount: String(totalAmount),
-        paymentMethod: validatedFields.data.paymentMethod,
+        paymentMethod: checkoutData.paymentMethod,
         couponId: couponId || null,
         discountAmount: String(discountAmount || 0),
         paymentStatus: 'pending',
@@ -839,8 +854,35 @@ export async function processCheckout(
         return `${p?.name || 'Product'} (x${item.quantity})`;
       });
 
-      return { success: true, url: `/order-confirmed/${orderNumber}`, orderId, productDetails };
+      return { success: true as const, url: `/order-confirmed/${orderNumber}`, orderId, productDetails };
     });
+  }
+
+  try {
+    const deliveryFee = String(await getDeliveryFeeForLocation(checkoutData.deliveryMethod));
+
+    // Order numbers are short and can theoretically collide under
+    // concurrent checkouts, so on a unique-constraint violation we
+    // regenerate and retry a few times instead of failing the order.
+    const MAX_ATTEMPTS = 4;
+    let result: { success: true; url: string; orderId: string; productDetails: string[] } | undefined;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        result = await runCheckoutTransaction(deliveryFee);
+        break;
+      } catch (error: any) {
+        if (isUniqueViolation(error) && attempt < MAX_ATTEMPTS) {
+          orderNumber = generateOrderNumber();
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (!result) {
+      throw new Error('Failed to create order after multiple attempts.');
+    }
 
     // 5. Send Telegram Notification (Background)
     // Scheduled with `after` so it's guaranteed to run to completion even
@@ -849,18 +891,18 @@ export async function processCheckout(
     after(() =>
       sendTelegramNotification({
         orderNumber,
-        customerName: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
-        phone: validatedFields.data.mobile,
+        customerName: `${checkoutData.firstName} ${checkoutData.lastName}`,
+        phone: checkoutData.mobile,
         items: result.productDetails,
         totalAmount: String(totalAmount),
-        address: `${validatedFields.data.address}, ${validatedFields.data.district}`,
+        address: `${checkoutData.address}, ${checkoutData.district}`,
         orderId: result.orderId,
       }).catch(err => console.error('Telegram notification error:', err))
     );
 
     await logActivity({
       event: 'ORDER_CREATE',
-      actor: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
+      actor: `${checkoutData.firstName} ${checkoutData.lastName}`,
       message: `Order #${orderNumber} placed online for Tk ${totalAmount}.`,
     });
 
@@ -870,7 +912,9 @@ export async function processCheckout(
     if (error?.message === 'NEXT_REDIRECT') throw error;
     return {
       success: false,
-      message: error.message || 'Failed to process checkout. Please try again.'
+      message: isUniqueViolation(error)
+        ? 'Could not generate a unique order number, please try again.'
+        : (error.message || 'Failed to process checkout. Please try again.')
     };
   }
 }
@@ -1347,7 +1391,7 @@ export async function createOrderManual(
     } = data;
 
     const isOnline = orderSource === 'online';
-    const orderNumber = `${isOnline ? 'ONL' : 'POS'}-${Date.now().toString().slice(-6)}`;
+    const orderNumber = generateOrderNumber(isOnline ? 'ONL-' : 'POS-');
 
     // Total calculation: sum(items) + deliveryFee - couponDiscount
     const itemsTotal = items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
